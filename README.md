@@ -1,4 +1,4 @@
-# spotifyreplaylist
+# spotify-playlist-organiser
 
 ## Project setup
 ```
