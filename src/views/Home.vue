@@ -1,5 +1,5 @@
 <template>
-  <div class="container"></div>
+  <div class="container">{{ this.$store.state.isLoggedIn }}</div>
 </template>
 
 <script>

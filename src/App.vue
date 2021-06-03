@@ -1,5 +1,5 @@
 <template>
-  <div class="nav px-3">
+  <div class="nav px-3" v-if="this.$route.path != '/verify'">
     <div class="nav__logo">Spotify REplaylist</div>
     <div class="nav__content">
       <router-link to="/" class="nav__button button">Home</router-link>
@@ -9,8 +9,9 @@
     </div>
 
     <div class="nav__action">
-      <LoginButton v-show="!isLoggedIn" @onclick="login" />
-      <ProfileButton v-show="isLoggedIn" @onclick="print" />
+      <LoginButton v-show="!isLoggedIn && !isLoading" @onclick="login" />
+      <LoadingButton v-show="!isLoggedIn && isLoading" />
+      <ProfileButton v-show="isLoggedIn && !isLoading" @onclick="print" />
     </div>
   </div>
   <router-view />
@@ -19,15 +20,24 @@
 <script>
 import LoginButton from "@/components/LoginButton.vue";
 import ProfileButton from "@/components/ProfileButton.vue";
+import LoadingButton from "@/components/LoadingButton.vue";
+import axios from "axios";
 
 export default {
   components: {
     LoginButton,
     ProfileButton,
+    LoadingButton,
   },
-  created () {
-    document.cookie = "testing=tested";
-    console.log(document.cookie);
+  data() {
+    return {
+      isLoading: false,
+      hasCode: false,
+      code: "",
+    };
+  },
+  async created() {
+    this.checkCookieUpdated();
   },
   computed: {
     isLoggedIn() {
@@ -40,10 +50,46 @@ export default {
   methods: {
     login() {
       // this.$store.commit("toggleIsLoggedIn", true);
-      window.open("https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private", "popupWindow", "height=500,width=400,resizable=false")
+      window.open(
+        "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private",
+        "popupWindow",
+        "height=500,width=400,resizable=false"
+      );
+      this.isLoading = true;
     },
     print() {
       console.log(this.user);
+    },
+    checkCookieUpdated() {
+      let vue = this;
+
+      var timer = setInterval(function () {
+        var code = vue.$cookies.get("code");
+
+        if (code != null) {
+          // console.log(vue.code);
+          vue.hasCode = true;
+          console.log(vue.hasCode);
+          vue.$store.commit("toggleIsLoggedIn", true);
+          vue.getSpotifyUser(code);
+          clearInterval(timer);
+        }
+      }, 1000);
+    },
+    getSpotifyUser(code) {
+      // axios
+      //   .post("http://localhost:3030/api/getSpotifyUser", {
+      //     code: code,
+      //   })
+      //   .then((response) => console.log(response));
+      axios({
+        method: "POST",
+        url: "http://localhost:3030/api/getSpotifyUser",
+        data: { code: code },
+        // headers: {
+        //   "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+        // },
+      }).then((response) => console.log(response));
     },
   },
 };
