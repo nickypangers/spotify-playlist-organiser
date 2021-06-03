@@ -25,6 +25,10 @@ export default {
     LoginButton,
     ProfileButton,
   },
+  created () {
+    document.cookie = "testing=tested";
+    console.log(document.cookie);
+  },
   computed: {
     isLoggedIn() {
       return this.$store.state.isLoggedIn;
@@ -35,7 +39,8 @@ export default {
   },
   methods: {
     login() {
-      this.$store.commit("toggleIsLoggedIn", true);
+      // this.$store.commit("toggleIsLoggedIn", true);
+      window.open("https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private", "popupWindow", "height=500,width=400,resizable=false")
     },
     print() {
       console.log(this.user);
