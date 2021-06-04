@@ -22,7 +22,7 @@ import LoginButton from "@/components/LoginButton.vue";
 import ProfileButton from "@/components/ProfileButton.vue";
 import LoadingButton from "@/components/LoadingButton.vue";
 import axios from "axios";
-// import qs from 'qs';
+import qs from "qs";
 
 export default {
   components: {
@@ -33,16 +33,24 @@ export default {
   data() {
     return {
       isLoading: false,
-      hasCode: false,
       code: "",
     };
   },
   mounted() {
+    this.$cookies.remove("code");
     this.getUser();
   },
   computed: {
-    isLoggedIn() {
-      return this.$store.state.isLoggedIn;
+    hasCode() {
+      return this.code.length == 219;
+    },
+    isLoggedIn: {
+      get() {
+        return this.$store.state.isLoggedIn;
+      },
+      set(val) {
+        this.$store.commit("toggleIsLoggedIn", val);
+      },
     },
     user() {
       return this.$store.state.user;
@@ -62,50 +70,49 @@ export default {
       console.log(this.user);
     },
     getUser() {
-      // let code = this.getCookieCode();
+      const timer = setInterval(
+        function () {
+          this.getCookieCode();
 
-      // if (this.hasCode) {
-        this.getSpotifyUserDetail("AQB5XPeNOrkpdU3QTnYclHOJfUnCqsqABdfVSmjUpF0MsBQT-1gx0juFRZyysIQBScBOlAOWc4jcrEQ808ugoKBLNybFxdgwlCpOfmY7R_7O9JAVAQXdwzeX--anDvtZVe-VPcpZVG7Lc7yTflY8AYRqbCUwF8AthdkfmLaAgrng2ZLiq3p9gyYKPYu_hzw59Xcw2um45SAC9ldzq1qMsQk2ge8")
-      // }
+          if (this.hasCode) {
+            clearInterval(timer);
+            this.getSpotifyUserDetail();
+            return;
+          }
+        }.bind(this),
+        1000
+      );
     },
     getCookieCode() {
-      let vue = this;
+      let code = this.$cookies.get("code");
 
-      var code = "";
+      console.log(code);
 
-      var timer = setInterval(function () {
-        code = vue.$cookies.get("code");
-
-        console.log("checking")
-
-        if (code != null && code.length > 100) {
-          vue.hasCode = true;
-          clearInterval(timer);
-          console.log(code)
-          return code
-        }
-      }, 1000);
-
-
+      if (code.length == 219) {
+        this.code = code;
+      }
     },
-    getSpotifyUserDetail(code) {
-
-      axios({
-        method: 'post',
-        url: `http://localhost:3030/api/getSpotifyUser`,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        data: JSON.stringify({code: code}),
-        maxBodyLength: 100000000,
-        maxContentLength: 100000000,
-      }).then(function(response) {
-        console.log(response)
-      }).catch(function(e) {
-        console.log(e)
-      })
-    }
+    getSpotifyUserDetail() {
+      axios
+        .post(
+          "http://localhost:3030/api/getSpotifyUser",
+          qs.stringify({ code: this.code }),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        )
+        .then(
+          function (response) {
+            console.log(response.data);
+            this.$store.commit("setUser", response.data);
+            this.isLoading = false;
+            this.isLoggedIn = true;
+          }.bind(this)
+        )
+        .catch((e) => console.log(e));
+    },
   },
 };
 </script>
