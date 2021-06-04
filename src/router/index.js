@@ -1,5 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
+import store from "@/store/index.js";
 import Home from "../views/Home.vue";
+import About from "../views/About.vue";
+import Search from "../views/Search.vue";
+import Profile from "../views/Profile.vue";
+import Verify from "../views/Verify.vue";
+
+function isAuthenticated() {
+  return store.state.user != null;
+}
 
 const routes = [
   {
@@ -10,17 +19,29 @@ const routes = [
   {
     path: "/about",
     name: "About",
-    component: () => import("../views/About.vue"),
+    component: About,
   },
   {
     path: "/search",
     name: "Search",
-    component: () => import("../views/Search.vue"),
+    component: Search,
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
+    beforeEnter(to, from, next) {
+      if (isAuthenticated()) {
+        next();
+      } else {
+        next("/");
+      }
+    },
   },
   {
     path: "/verify",
     name: "Verify",
-    component: () => import("../views/Verify.vue"),
+    component: Verify,
   },
 ];
 

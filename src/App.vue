@@ -5,7 +5,9 @@
       <router-link to="/" class="nav__button button">Home</router-link>
       <router-link to="/about" class="nav__button button">Home</router-link>
       <router-link to="/search" class="nav__button button">Home</router-link>
-      <router-link to="/" class="nav__button button">Home</router-link>
+      <router-link to="/profile" class="nav__button button"
+        >Profile</router-link
+      >
     </div>
 
     <div class="nav__action">
@@ -33,16 +35,23 @@ export default {
   data() {
     return {
       isLoading: false,
-      code: "",
     };
   },
   mounted() {
-    this.$cookies.remove("code");
+    this.$cookies.remove("accessToken");
     this.getUser();
   },
   computed: {
+    accessToken: {
+      get() {
+        return this.$store.state.accessToken;
+      },
+      set(val) {
+        this.$store.commit("setAccessToken", val);
+      },
+    },
     hasCode() {
-      return this.code.length == 219;
+      return this.accessToken.length == 163;
     },
     isLoggedIn: {
       get() {
@@ -84,19 +93,19 @@ export default {
       );
     },
     getCookieCode() {
-      let code = this.$cookies.get("code");
+      let accessToken = this.$cookies.get("accessToken");
 
-      console.log(code);
+      console.log(accessToken);
 
-      if (code.length == 219) {
-        this.code = code;
+      if (accessToken.length != "") {
+        this.accessToken = accessToken;
       }
     },
     getSpotifyUserDetail() {
       axios
         .post(
           "http://localhost:3030/api/getSpotifyUser",
-          qs.stringify({ code: this.code }),
+          qs.stringify({ accessToken: this.accessToken }),
           {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",

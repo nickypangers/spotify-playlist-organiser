@@ -4,6 +4,7 @@ export default createStore({
   state: {
     isLoggedIn: false,
     user: null,
+    accessToken: null,
   },
   mutations: {
     toggleIsLoggedIn(state, val) {
@@ -11,6 +12,9 @@ export default createStore({
     },
     setUser(state, val) {
       state.user = val;
+    },
+    setAccessToken(state, val) {
+      state.accessToken = val;
     },
   },
   actions: {},
