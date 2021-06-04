@@ -10,7 +10,7 @@
 
     <div class="nav__action">
       <LoginButton v-show="!isLoggedIn && !isLoading" @onclick="login" />
-      <LoadingButton v-show="!isLoggedIn && isLoading" />
+      <LoadingButton v-show="isLoading" />
       <ProfileButton v-show="isLoggedIn && !isLoading" @onclick="print" />
     </div>
   </div>
@@ -22,6 +22,7 @@ import LoginButton from "@/components/LoginButton.vue";
 import ProfileButton from "@/components/ProfileButton.vue";
 import LoadingButton from "@/components/LoadingButton.vue";
 import axios from "axios";
+// import qs from 'qs';
 
 export default {
   components: {
@@ -36,8 +37,8 @@ export default {
       code: "",
     };
   },
-  async created() {
-    this.checkCookieUpdated();
+  mounted() {
+    this.getUser();
   },
   computed: {
     isLoggedIn() {
@@ -60,37 +61,51 @@ export default {
     print() {
       console.log(this.user);
     },
-    checkCookieUpdated() {
+    getUser() {
+      // let code = this.getCookieCode();
+
+      // if (this.hasCode) {
+        this.getSpotifyUserDetail("AQB5XPeNOrkpdU3QTnYclHOJfUnCqsqABdfVSmjUpF0MsBQT-1gx0juFRZyysIQBScBOlAOWc4jcrEQ808ugoKBLNybFxdgwlCpOfmY7R_7O9JAVAQXdwzeX--anDvtZVe-VPcpZVG7Lc7yTflY8AYRqbCUwF8AthdkfmLaAgrng2ZLiq3p9gyYKPYu_hzw59Xcw2um45SAC9ldzq1qMsQk2ge8")
+      // }
+    },
+    getCookieCode() {
       let vue = this;
 
-      var timer = setInterval(function () {
-        var code = vue.$cookies.get("code");
+      var code = "";
 
-        if (code != null) {
-          // console.log(vue.code);
+      var timer = setInterval(function () {
+        code = vue.$cookies.get("code");
+
+        console.log("checking")
+
+        if (code != null && code.length > 100) {
           vue.hasCode = true;
-          console.log(vue.hasCode);
-          vue.$store.commit("toggleIsLoggedIn", true);
-          vue.getSpotifyUser(code);
           clearInterval(timer);
+          console.log(code)
+          return code
         }
       }, 1000);
+
+
     },
-    getSpotifyUser(code) {
-      // axios
-      //   .post("http://localhost:3030/api/getSpotifyUser", {
-      //     code: code,
-      //   })
-      //   .then((response) => console.log(response));
+    getSpotifyUserDetail(code) {
+
       axios({
-        method: "POST",
-        url: "http://localhost:3030/api/getSpotifyUser",
-        data: { code: code },
-        // headers: {
-        //   "content-type": "application/x-www-form-urlencoded;charset=utf-8",
-        // },
-      }).then((response) => console.log(response));
-    },
+        method: 'post',
+        url: `http://localhost:3030/api/getSpotifyUser`,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: JSON.stringify({code: code}),
+        maxBodyLength: 100000000,
+        maxContentLength: 100000000,
+      }).then(function(response) {
+        console.log(response)
+      }).catch(function(e) {
+        console.log(e)
+      })
+    }
   },
 };
 </script>
