@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "@/store/index.js";
 import Home from "../views/Home.vue";
-import About from "../views/About.vue";
+import Playlist from "../views/Playlist.vue";
 import Search from "../views/Search.vue";
 import Profile from "../views/Profile.vue";
 import Verify from "../views/Verify.vue";
@@ -17,9 +17,16 @@ const routes = [
     component: Home,
   },
   {
-    path: "/about",
-    name: "About",
-    component: About,
+    path: "/playlist",
+    name: "Playlist",
+    component: Playlist,
+    beforeEnter(to, from, next) {
+      if (isAuthenticated()) {
+        next();
+      } else {
+        next("/");
+      }
+    },
   },
   {
     path: "/search",

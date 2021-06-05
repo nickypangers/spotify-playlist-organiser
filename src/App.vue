@@ -3,7 +3,9 @@
     <div class="nav__logo">Spotify REplaylist</div>
     <div class="nav__content">
       <router-link to="/" class="nav__button button">Home</router-link>
-      <router-link to="/about" class="nav__button button">Home</router-link>
+      <router-link to="/playlist" class="nav__button button"
+        >Playlist</router-link
+      >
       <router-link to="/search" class="nav__button button">Home</router-link>
       <router-link to="/profile" class="nav__button button"
         >Profile</router-link
@@ -42,16 +44,11 @@ export default {
     this.getUser();
   },
   computed: {
-    accessToken: {
-      get() {
-        return this.$store.state.accessToken;
-      },
-      set(val) {
-        this.$store.commit("setAccessToken", val);
-      },
+    accessToken() {
+      return this.$store.state.accessToken;
     },
-    hasCode() {
-      return this.accessToken.length == 163;
+    hasAccessToken() {
+      return this.accessToken != null;
     },
     isLoggedIn: {
       get() {
@@ -81,25 +78,19 @@ export default {
     getUser() {
       const timer = setInterval(
         function () {
-          this.getCookieCode();
+          console.log(this.hasAccessToken);
 
-          if (this.hasCode) {
+          let accessToken = this.$cookies.get("accessToken");
+
+          if (accessToken.length == 163) {
             clearInterval(timer);
+            this.$store.commit("setAccessToken", accessToken);
             this.getSpotifyUserDetail();
             return;
           }
         }.bind(this),
         1000
       );
-    },
-    getCookieCode() {
-      let accessToken = this.$cookies.get("accessToken");
-
-      console.log(accessToken);
-
-      if (accessToken.length != "") {
-        this.accessToken = accessToken;
-      }
     },
     getSpotifyUserDetail() {
       axios
