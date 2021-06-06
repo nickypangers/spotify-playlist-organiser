@@ -73,12 +73,12 @@ export default {
       this.isLoading = true;
     },
     print() {
-      console.log(this.user);
+      // console.log(this.user);
     },
     getUser() {
       const timer = setInterval(
         function () {
-          console.log(this.hasAccessToken);
+          // console.log(this.hasAccessToken);
 
           let accessToken = this.$cookies.get("accessToken");
 
@@ -105,7 +105,7 @@ export default {
         )
         .then(
           function (response) {
-            console.log(response.data);
+            // console.log(response.data);
             this.$store.commit("setUser", response.data);
             this.isLoading = false;
             this.isLoggedIn = true;

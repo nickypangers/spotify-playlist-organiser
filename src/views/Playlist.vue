@@ -1,9 +1,27 @@
 <template>
   <div class="playlist">
     <h1>This is an playlist page.</h1>
-    <p v-for="(playlist, index) in playlistList" :key="'playlist-' + index">
-      {{ playlist.name }}
-    </p>
+    <div class="container">
+      <div class="row">
+        <div class="col-6">
+          <p
+            v-for="(playlist, index) in playlistList"
+            :key="'playlist-' + index"
+            @click="setSelectedIndex(index)"
+          >
+            {{ playlist.name }}
+          </p>
+        </div>
+        <div class="col-6">
+          <div
+            v-for="(item, index) in selectedPlaylistItemList.items"
+            :key="'selectedPlaylistItemList-' + index"
+          >
+            <p>{{ item.track.name }} by {{ displayTrackArtist(item.track) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -12,13 +30,17 @@ import axios from "axios";
 import qs from "qs";
 
 export default {
+  name: "Playlist",
   data() {
     return {
-      playlistList: null,
+      playlistList: [],
+      selectedIndex: 0,
+      selectedPlaylistItemList: [],
     };
   },
-  mounted() {
-    this.getPlaylist();
+  async mounted() {
+    await this.getPlaylist();
+    await this.getPlaylistItemList();
   },
   computed: {
     getUser() {
@@ -27,25 +49,63 @@ export default {
     accessToken() {
       return this.$store.state.accessToken;
     },
+    selectedPlaylist() {
+      return this.playlistList[this.selectedIndex];
+    },
+  },
+  watch: {
+    selectedIndex(newVal, oldVal) {
+      if (newVal != oldVal) {
+        // console.log(`changed val - ${oldVal} to ${newVal}`);
+        this.getPlaylistItemList();
+      }
+    },
   },
   methods: {
-    getPlaylist() {
-      axios
-        .post(
-          "http://localhost:3030/api/getSpotifyUserPlaylist",
-          qs.stringify({
-            userId: this.getUser.display_name,
-            accessToken: this.accessToken,
-          }),
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-        )
-        .then(
-          function (response) {
-            console.log(response.data);
-            this.playlistList = response.data.items;
-          }.bind(this)
-        )
-        .catch((e) => console.log(e));
+    setSelectedIndex(val) {
+      this.selectedIndex = val;
+    },
+    async getPlaylist() {
+      let response = await axios.post(
+        "http://localhost:3030/api/getSpotifyUserPlaylist",
+        qs.stringify({
+          userId: this.getUser.display_name,
+          accessToken: this.accessToken,
+        }),
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+
+      // console.log(response.data);
+      this.playlistList = response.data.items;
+    },
+    async getPlaylistItemList() {
+      let response = await axios.post(
+        "http://localhost:3030/api/getSpotifyPlaylistItemList",
+        qs.stringify({
+          playlistId: this.selectedPlaylist.id,
+          country: this.getUser.country,
+          accessToken: this.accessToken,
+        }),
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+
+      this.selectedPlaylistItemList = response.data;
+      // console.log(this.selectedPlaylistItemList);
+    },
+    displayTrackArtist(track) {
+      var displayArtist = "";
+
+      let length = track.artists.length;
+
+      track.artists.forEach((artist, index) => {
+        if (index == length - 1) {
+          displayArtist += artist.name;
+        } else {
+          displayArtist += `${artist.name}, `;
+        }
+      });
+
+      return displayArtist;
     },
   },
 };

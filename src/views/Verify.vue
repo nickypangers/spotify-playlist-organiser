@@ -16,7 +16,7 @@ export default {
       )
       .then(
         function (response) {
-          console.log(response.data);
+          // console.log(response.data);
 
           this.$cookies.set(
             "accessToken",
