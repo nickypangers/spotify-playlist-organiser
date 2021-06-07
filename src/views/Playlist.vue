@@ -1,24 +1,22 @@
 <template>
   <div class="playlist">
-    <h1>This is an playlist page.</h1>
     <div class="container">
       <div class="row">
-        <div class="col-6">
-          <p
+        <div class="col-6 row flex-column">
+          <PlaylistButton
+            :class="isActive(index)"
+            :playlist="playlist"
             v-for="(playlist, index) in playlistList"
             :key="'playlist-' + index"
             @click="setSelectedIndex(index)"
-          >
-            {{ playlist.name }}
-          </p>
+          />
         </div>
-        <div class="col-6">
-          <div
+        <div class="col-6 row flex-column">
+          <PlaylistItemButton
+            :item="item"
             v-for="(item, index) in selectedPlaylistItemList.items"
             :key="'selectedPlaylistItemList-' + index"
-          >
-            <p>{{ item.track.name }} by {{ displayTrackArtist(item.track) }}</p>
-          </div>
+          />
         </div>
       </div>
     </div>
@@ -26,11 +24,17 @@
 </template>
 
 <script>
+import PlaylistButton from "@/components/PlaylistButton";
+import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
 import qs from "qs";
 
 export default {
   name: "Playlist",
+  components: {
+    PlaylistButton,
+    PlaylistItemButton,
+  },
   data() {
     return {
       playlistList: [],
@@ -41,6 +45,7 @@ export default {
   async mounted() {
     await this.getPlaylist();
     await this.getPlaylistItemList();
+    this.playlistList.forEach((playlist) => console.log(playlist));
   },
   computed: {
     getUser() {
@@ -56,7 +61,6 @@ export default {
   watch: {
     selectedIndex(newVal, oldVal) {
       if (newVal != oldVal) {
-        // console.log(`changed val - ${oldVal} to ${newVal}`);
         this.getPlaylistItemList();
       }
     },
@@ -64,6 +68,11 @@ export default {
   methods: {
     setSelectedIndex(val) {
       this.selectedIndex = val;
+    },
+    isActive(val) {
+      return {
+        active: this.selectedIndex == val,
+      };
     },
     async getPlaylist() {
       let response = await axios.post(
@@ -75,7 +84,6 @@ export default {
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
 
-      // console.log(response.data);
       this.playlistList = response.data.items;
     },
     async getPlaylistItemList() {
@@ -90,7 +98,6 @@ export default {
       );
 
       this.selectedPlaylistItemList = response.data;
-      // console.log(this.selectedPlaylistItemList);
     },
     displayTrackArtist(track) {
       var displayArtist = "";
@@ -110,3 +117,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.active {
+  background: turquoise;
+}
+</style>
