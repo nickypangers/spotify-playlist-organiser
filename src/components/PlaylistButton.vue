@@ -1,6 +1,6 @@
 <template>
   <button class="btn playlist-button">
-    {{ playlist.name }} - Collaborative: {{ playlist.collaborative }}
+    {{ playlist.name }} - Collaborative: {{ playlist.collaborative }}, Songs: {{ playlist.tracks.total }}
   </button>
 </template>
 

@@ -11,12 +11,22 @@
             @click="setSelectedIndex(index)"
           />
         </div>
-        <div class="col-6 row flex-column">
-          <PlaylistItemButton
+        <div class="col-6">
+          <draggable
+          class="list-group"
+            :list="selectedPlaylistItemList.items"
+            item-key="selectedPlaylistItemList"
+          >
+            <template #item="{ element }">
+              <PlaylistItemButton :item="element" />
+            </template>
+          </draggable>
+
+          <!-- <PlaylistItemButton
             :item="item"
             v-for="(item, index) in selectedPlaylistItemList.items"
             :key="'selectedPlaylistItemList-' + index"
-          />
+          /> -->
         </div>
       </div>
     </div>
@@ -28,10 +38,12 @@ import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
 import qs from "qs";
+import draggable from "vuedraggable"
 
 export default {
   name: "Playlist",
   components: {
+    draggable,
     PlaylistButton,
     PlaylistItemButton,
   },

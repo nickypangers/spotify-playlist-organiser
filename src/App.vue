@@ -105,7 +105,6 @@ export default {
         )
         .then(
           function (response) {
-            // console.log(response.data);
             this.$store.commit("setUser", response.data);
             this.isLoading = false;
             this.isLoggedIn = true;
