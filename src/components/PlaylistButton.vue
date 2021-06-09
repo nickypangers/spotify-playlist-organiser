@@ -1,13 +1,21 @@
 <template>
   <button class="btn playlist-button">
-    {{ playlist.name }} - Collaborative: {{ playlist.collaborative }}, Songs: {{ playlist.tracks.total }}
+    <div class="d-flex align-items-center">
+      <p class="m-0">{{ playlist.name }}</p>
+      <Label class="ms-2" name="Collaborative" v-if="playlist.collaborative" />
+    </div>
+    {{ playlist.tracks.total }} song(s)
   </button>
 </template>
 
 <script>
+import Label from "@/components/Label"
 export default {
   name: "PlaylistButton",
   props: { playlist: Object },
+  components: {
+    Label
+  }
 };
 </script>
 
@@ -17,7 +25,7 @@ export default {
   word-wrap: break-word;
   margin: 0.5rem 0;
   display: flex;
-  justify-content: start;
+  flex-direction: column;
   align-items: center;
 }
 </style>

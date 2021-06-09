@@ -12,8 +12,12 @@
           />
         </div>
         <div class="col-6">
+          <div v-show="isLoading" class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
           <draggable
-          class="list-group"
+            v-show="!isLoading"
+            class="list-group"
             :list="selectedPlaylistItemList.items"
             item-key="selectedPlaylistItemList"
           >
@@ -21,12 +25,6 @@
               <PlaylistItemButton :item="element" />
             </template>
           </draggable>
-
-          <!-- <PlaylistItemButton
-            :item="item"
-            v-for="(item, index) in selectedPlaylistItemList.items"
-            :key="'selectedPlaylistItemList-' + index"
-          /> -->
         </div>
       </div>
     </div>
@@ -52,12 +50,15 @@ export default {
       playlistList: [],
       selectedIndex: 0,
       selectedPlaylistItemList: [],
+      isLoading: false,
     };
   },
   async mounted() {
+    this.isLoading = true;
     await this.getPlaylist();
     await this.getPlaylistItemList();
-    this.playlistList.forEach((playlist) => console.log(playlist));
+    this.isLoading = false;
+    // this.playlistList.forEach((playlist) => console.log(playlist));
   },
   computed: {
     getUser() {
@@ -71,9 +72,11 @@ export default {
     },
   },
   watch: {
-    selectedIndex(newVal, oldVal) {
+    async selectedIndex(newVal, oldVal) {
       if (newVal != oldVal) {
-        this.getPlaylistItemList();
+        this.isLoading = true;
+        await this.getPlaylistItemList();
+        this.isLoading = false;
       }
     },
   },

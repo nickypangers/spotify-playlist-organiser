@@ -127,7 +127,8 @@ export default {
   color: #2c3e50;
   background: #f7e6e6;
   font: 16px;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 .nav {
@@ -149,13 +150,6 @@ export default {
   height: 3rem;
   margin: 0px 5px;
 }
-
-/* .nav__action {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 2rem;
-} */
 
 .button,
 .button:hover,
