@@ -36,7 +36,7 @@ import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
 import qs from "qs";
-import draggable from "vuedraggable"
+import draggable from "vuedraggable";
 
 export default {
   name: "Playlist",

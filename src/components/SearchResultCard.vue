@@ -1,5 +1,5 @@
 <template>
-  <div class="w-50 d-flex justify-content-center mb-4" @click="log">
+  <div class="w-50 d-flex justify-content-start my-4" @click="log">
     <img
       :src="albumImage.url"
       alt="album image"
@@ -7,8 +7,8 @@
       :height="albumImage.height"
     />
     <div class="ms-3">
-      <h4>{{ track.name }}</h4>
-      <p class="m-0">{{ displayTrackArtist(track) }}</p>
+      <h4 class="text-start">{{ track.name }}</h4>
+      <p class="m-0 text-start">{{ displayTrackArtist(track) }}</p>
     </div>
   </div>
 </template>
@@ -19,8 +19,8 @@ export default {
   props: { track: Object },
   computed: {
     albumImage() {
-      return this.track.album.images[2]
-    }
+      return this.track.album.images[2];
+    },
   },
   methods: {
     displayTrackArtist(track) {
@@ -38,8 +38,8 @@ export default {
       return displayArtist;
     },
     log() {
-      console.log(this.track)
-    }
+      console.log(this.track);
+    },
   },
 };
 </script>
