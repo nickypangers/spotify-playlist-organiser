@@ -3,10 +3,10 @@
     <div class="nav__logo">Spotify REplaylist</div>
     <div class="nav__content">
       <router-link to="/" class="nav__button button">Home</router-link>
+      <router-link to="/search" class="nav__button button">Search</router-link>
       <router-link to="/playlist" class="nav__button button"
         >Playlist</router-link
       >
-      <router-link to="/search" class="nav__button button">Home</router-link>
       <router-link to="/profile" class="nav__button button"
         >Profile</router-link
       >
