@@ -10,22 +10,21 @@
       @keyup="submitSearch"
     />
     <div>
-      <div
-        v-for="(track, index) in result.tracks.items"
-        :key="'track-' + index"
-      >
-        <h4>{{ track.name }}</h4>
-        <p>{{ displayTrackArtist(track) }}</p>
-      </div>
+      <SearchResultCard :track="track" v-for="(track, index) in result.tracks.items"
+        :key="'track-' + index" />
     </div>
   </div>
 </template>
 
 <script>
+import SearchResultCard from "@/components/SearchResultCard"
 import axios from "axios"
 import qs from "qs";
 export default {
   name: "Search",
+  components: {
+    SearchResultCard,
+  },
   data() {
     return {
       query: '',
@@ -46,25 +45,25 @@ export default {
     },
   },
   methods: {
-    displayTrackArtist(track) {
-      var displayArtist = "";
+    // displayTrackArtist(track) {
+    //   var displayArtist = "";
 
-      let length = track.artists.length;
+    //   let length = track.artists.length;
 
-      track.artists.forEach((artist, index) => {
-        if (index == length - 1) {
-          displayArtist += artist.name;
-        } else {
-          displayArtist += `${artist.name}, `;
-        }
-      });
+    //   track.artists.forEach((artist, index) => {
+    //     if (index == length - 1) {
+    //       displayArtist += artist.name;
+    //     } else {
+    //       displayArtist += `${artist.name}, `;
+    //     }
+    //   });
 
-      return displayArtist;
-    },
+    //   return displayArtist;
+    // },
     async submitSearch() {
       if (this.query) {
         await this.searchQuery()
-        console.log(this.result)
+        // console.log(this.result)
       } else {
         this.result = {
           artists: {

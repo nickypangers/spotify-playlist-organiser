@@ -16,13 +16,14 @@ export default {
       )
       .then(
         function (response) {
-          // console.log(response.data);
 
           this.$cookies.set(
             "accessToken",
             response.data.access_token,
             response.data.expires_in
           );
+
+          this.$cookies.set("refreshToken", response.data.refresh_token);
 
           window.close();
         }.bind(this)
