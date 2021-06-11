@@ -12,11 +12,13 @@ export default {
     axios
       .post(
         "http://localhost:3030/api/getAuthToken",
-        qs.stringify({ code: this.$route.query.code })
+        qs.stringify({
+          grantType: "authorization_code",
+          code: this.$route.query.code,
+        })
       )
       .then(
         function (response) {
-
           this.$cookies.set(
             "accessToken",
             response.data.access_token,
