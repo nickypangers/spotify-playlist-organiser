@@ -1,6 +1,14 @@
 <template>
   <div class="playlist">
     <div class="container">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#createPlaylistModal"
+      >
+        Launch demo modal
+      </button>
       <div class="row">
         <div class="col-6 row flex-column">
           <PlaylistButton
@@ -29,6 +37,8 @@
       </div>
     </div>
   </div>
+
+  <CreatePlaylistModal />
 </template>
 
 <script>
@@ -37,6 +47,7 @@ import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
 import qs from "qs";
 import draggable from "vuedraggable";
+import CreatePlaylistModal from "@/components/CreatePlaylistModal.vue";
 
 export default {
   name: "Playlist",
@@ -44,6 +55,7 @@ export default {
     draggable,
     PlaylistButton,
     PlaylistItemButton,
+    CreatePlaylistModal,
   },
   data() {
     return {
