@@ -7,6 +7,7 @@
             :class="isActive(index)"
             :playlist="playlist"
             v-for="(playlist, index) in playlistList"
+            :is-selected="index == selectedIndex"
             :key="'playlist-' + index"
             @click="setSelectedIndex(index)"
           />
