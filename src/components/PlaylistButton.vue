@@ -12,9 +12,21 @@
       {{ playlist.tracks.total }} song(s)
     </div>
     <div class="w-100 d-flex justify-content-around" v-if="isSelected">
-      <button class="btn" @click="log('hi')">
-        <BIconList />
-      </button>
+      <div class="btn-group">
+        <button
+          type="button"
+          class="btn dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <BIconList />
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#">Edit</a></li>
+          <li><a class="dropdown-item" href="#">Another action</a></li>
+          <li><a class="dropdown-item" href="#">Something else here</a></li>
+        </ul>
+      </div>
       <button class="btn" @click="log('test')">
         <BIconList />
       </button>
