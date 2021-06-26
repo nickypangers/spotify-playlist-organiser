@@ -9,7 +9,7 @@
       search-result-card
     "
     @click="goToTrack"
-  >]''
+  >
     <img
       class="d-lg-block d-none"
       :src="albumImageSmall.url"

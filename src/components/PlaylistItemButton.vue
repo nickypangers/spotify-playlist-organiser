@@ -1,7 +1,14 @@
 <template>
-  <button class="btn playlistItem-button" @click.prevent="goToTrack">
+  <button
+    class="btn playlist-item-button mb-2"
+    :class="{ 'playlist-selected': isSelected }"
+    @click.prevent="goToTrack"
+  >
+    <b>
+      {{ item.track.name }}
+    </b>
     <p class="m-0">
-      {{ item.track.name }} by {{ displayTrackArtist(item.track) }}
+      {{ displayTrackArtist(item.track) }}
     </p>
   </button>
 </template>
@@ -9,7 +16,13 @@
 <script>
 export default {
   name: "PlaylistItemButton",
-  props: { item: Object },
+  props: {
+    item: Object,
+    isSelected: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
     spotifyTrackUrl() {
       return this.item.track.external_urls.spotify;
@@ -32,9 +45,23 @@ export default {
       return displayArtist;
     },
     goToTrack() {
-      //   console.log(this.spotifyTrackUrl);
-      window.open(this.spotifyTrackUrl, "_blank");
+      console.log(this.item);
+      // window.open(this.spotifyTrackUrl, "_blank");
     },
   },
 };
 </script>
+
+<style scoped>
+.playlist-item-button {
+  border: 1px solid black;
+}
+
+.playlist-item-button:hover {
+  background-color: orange;
+}
+
+.playlist-selected {
+  background-color: orange;
+}
+</style>

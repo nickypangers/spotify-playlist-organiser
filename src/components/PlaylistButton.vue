@@ -11,6 +11,7 @@
       </div>
       {{ playlist.tracks.total }} song(s)
     </div>
+    <hr v-if="isSelected" />
     <div class="w-100 d-flex justify-content-around" v-if="isSelected">
       <div class="btn-group">
         <button

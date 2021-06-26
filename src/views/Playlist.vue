@@ -30,8 +30,12 @@
             :list="selectedPlaylistItemList.items"
             item-key="selectedPlaylistItemList"
           >
-            <template #item="{ element }">
-              <PlaylistItemButton :item="element" />
+            <template #item="{ element, index }">
+              <PlaylistItemButton
+                :item="element"
+                :is-selected="isPlaylistItemSelected(index)"
+                @click="setselectedPlaylistItemIndex(index)"
+              />
             </template>
           </draggable>
         </div>
@@ -64,6 +68,7 @@ export default {
       selectedIndex: 0,
       selectedPlaylistItemList: [],
       isLoading: false,
+      selectedPlaylistItemIndex: 0,
     };
   },
   async mounted() {
@@ -94,6 +99,12 @@ export default {
     },
   },
   methods: {
+    isPlaylistItemSelected(val) {
+      return this.selectedPlaylistItemIndex == val;
+    },
+    setselectedPlaylistItemIndex(val) {
+      this.selectedPlaylistItemIndex = val;
+    },
     setSelectedIndex(val) {
       this.selectedIndex = val;
     },
