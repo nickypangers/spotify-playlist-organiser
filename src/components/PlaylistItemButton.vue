@@ -2,11 +2,8 @@
   <button
     class="btn playlist-item-button mb-2"
     :class="{ 'playlist-selected': isSelected }"
-    @click.prevent="goToTrack"
   >
-    <b>
-      {{ item.track.name }}
-    </b>
+    <b> {{ item.track.name }} <span v-if="item.track.explicit">🅴</span> </b>
     <p class="m-0">
       {{ displayTrackArtist(item.track) }}
     </p>
@@ -44,10 +41,9 @@ export default {
 
       return displayArtist;
     },
-    goToTrack() {
-      console.log(this.item);
-      // window.open(this.spotifyTrackUrl, "_blank");
-    },
+    // goToTrack() {
+    //   window.open(this.spotifyTrackUrl, "_blank");
+    // },
   },
 };
 </script>

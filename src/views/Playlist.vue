@@ -10,14 +10,13 @@
         Launch demo modal
       </button>
       <div class="row">
-        <div class="col-6 row flex-column">
+        <div class="col-6">
           <PlaylistButton
-            :class="isActive(index)"
             :playlist="playlist"
             v-for="(playlist, index) in playlistList"
             :is-selected="index == selectedIndex"
             :key="'playlist-' + index"
-            @click="setSelectedIndex(index)"
+            @click="setSelectedPlaylist(playlist, index)"
           />
         </div>
         <div class="col-6">
@@ -34,7 +33,7 @@
               <PlaylistItemButton
                 :item="element"
                 :is-selected="isPlaylistItemSelected(index)"
-                @click="setselectedPlaylistItemIndex(index)"
+                @click="setSelectedPlaylistItemIndex(index)"
               />
             </template>
           </draggable>
@@ -71,12 +70,15 @@ export default {
       selectedPlaylistItemIndex: 0,
     };
   },
+  created() {},
   async mounted() {
     this.isLoading = true;
     await this.getPlaylist();
     await this.getPlaylistItemList();
     this.isLoading = false;
-    // this.playlistList.forEach((playlist) => console.log(playlist));
+    if (this.playlistList.length > 0) {
+      this.$store.commit("setPlaylist", this.playlistList[0]);
+    }
   },
   computed: {
     getUser() {
@@ -102,7 +104,12 @@ export default {
     isPlaylistItemSelected(val) {
       return this.selectedPlaylistItemIndex == val;
     },
-    setselectedPlaylistItemIndex(val) {
+    setSelectedPlaylist(playlist, index) {
+      this.$store.commit("setPlaylist", playlist);
+      this.setSelectedIndex(index);
+      console.log(this.$store.state.playlist);
+    },
+    setSelectedPlaylistItemIndex(val) {
       this.selectedPlaylistItemIndex = val;
     },
     setSelectedIndex(val) {
@@ -157,8 +164,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.active {
-  background: turquoise;
-}
-</style>
+<style scoped></style>

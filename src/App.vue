@@ -128,7 +128,7 @@ export default {
   background: #f7e6e6;
   font: 16px;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
 }
 
 .nav {

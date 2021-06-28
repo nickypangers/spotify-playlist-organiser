@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ selected: isSelected }">
     <div class="playlist-button py-2">
       <div class="d-flex align-items-center">
         <p class="m-0">{{ playlist.name }}</p>
@@ -29,7 +29,7 @@
         </ul>
       </div>
       <button class="btn" @click="log('test')">
-        <BIconList />
+        <BIconPencilFill />
       </button>
       <button class="btn" @click="goTo(playlist.uri)">
         <BIconBoxArrowRight />
@@ -65,5 +65,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.selected {
+  background: turquoise;
 }
 </style>

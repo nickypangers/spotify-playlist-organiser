@@ -5,6 +5,7 @@ export default createStore({
     isLoggedIn: false,
     user: null,
     accessToken: null,
+    playlist: null,
   },
   mutations: {
     toggleIsLoggedIn(state, val) {
@@ -15,6 +16,9 @@ export default createStore({
     },
     setAccessToken(state, val) {
       state.accessToken = val;
+    },
+    setPlaylist(state, val) {
+      state.playlist = val;
     },
   },
   actions: {},
