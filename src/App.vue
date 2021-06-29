@@ -13,9 +13,9 @@
     </div>
 
     <div class="nav__action">
-      <LoginButton v-show="!isLoggedIn && !isLoading" @onclick="login" />
-      <LoadingButton v-show="isLoading" />
-      <ProfileButton v-show="isLoggedIn && !isLoading" @onclick="print" />
+      <LoginButton v-if="!isLoggedIn && !isLoading" @onclick="login" />
+      <LoadingButton v-if="isLoading" />
+      <ProfileButton v-if="isLoggedIn && !isLoading" />
     </div>
   </div>
   <router-view />
