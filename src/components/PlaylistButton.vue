@@ -1,6 +1,6 @@
 <template>
   <div :class="{ selected: isSelected }">
-    <div class="playlist-button py-2">
+    <div class="playlist-button py-2 m-0">
       <div class="d-flex align-items-center">
         <p class="m-0">{{ playlist.name }}</p>
         <Label

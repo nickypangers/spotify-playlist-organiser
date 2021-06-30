@@ -1,42 +1,48 @@
 <template>
   <div class="playlist">
     <div class="container">
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#createPlaylistModal"
-      >
-        Launch demo modal
-      </button>
-      <div class="row">
-        <div class="col-6">
-          <PlaylistButton
-            :playlist="playlist"
-            v-for="(playlist, index) in playlistList"
-            :is-selected="index == selectedIndex"
-            :key="'playlist-' + index"
-            @click="setSelectedPlaylist(playlist, index)"
-          />
-        </div>
-        <div class="col-6">
-          <div v-show="isLoading" class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
+      <div class="col-12 d-flex justify-content-between">
+        <span class="title">Playlist</span>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#createPlaylistModal"
+        >
+          Launch demo modal
+        </button>
+      </div>
+
+      <div class="mt-2">
+        <div class="row">
+          <div class="col-6">
+            <PlaylistButton
+              :playlist="playlist"
+              v-for="(playlist, index) in playlistList"
+              :is-selected="index == selectedIndex"
+              :key="'playlist-' + index"
+              @click="setSelectedPlaylist(playlist, index)"
+            />
           </div>
-          <draggable
-            v-show="!isLoading"
-            class="list-group"
-            :list="selectedPlaylistItemList.items"
-            item-key="selectedPlaylistItemList"
-          >
-            <template #item="{ element, index }">
-              <PlaylistItemButton
-                :item="element"
-                :is-selected="isPlaylistItemSelected(index)"
-                @click="setSelectedPlaylistItemIndex(index)"
-              />
-            </template>
-          </draggable>
+          <div class="col-6">
+            <div v-show="isLoading" class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <draggable
+              v-show="!isLoading"
+              class="list-group"
+              :list="selectedPlaylistItemList.items"
+              item-key="selectedPlaylistItemList"
+            >
+              <template #item="{ element, index }">
+                <PlaylistItemButton
+                  :item="element"
+                  :is-selected="isPlaylistItemSelected(index)"
+                  @click="setSelectedPlaylistItemIndex(index)"
+                />
+              </template>
+            </draggable>
+          </div>
         </div>
       </div>
     </div>

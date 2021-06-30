@@ -131,6 +131,11 @@ export default {
   min-height: 100vh;
 }
 
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 .nav {
   height: 5rem;
   display: flex;
