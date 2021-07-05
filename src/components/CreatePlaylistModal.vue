@@ -8,7 +8,7 @@
     aria-labelledby="createPlaylistLabel"
     aria-hidden="true"
   >
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">
@@ -22,20 +22,33 @@
           ></button>
         </div>
         <div class="modal-body">
-          <label for="playlistName"> Playlist Name:</label>
-          <input
-            type="text"
-            name="playlistName"
-            v-model="playlistName"
-            required
-          />
-          <label for="public">
-            Public:
-            <select v-model="isPublic" @change="log(isPublic)">
-              <option :value="true">True</option>
-              <option :value="false">False</option>
-            </select>
-          </label>
+          <div class="container">
+            <div class="d-flex align-items-center">
+              <label for="name"> Playlist Name: </label>
+              &nbsp;
+              <input type="text" name="name" id="name" v-model="playlistName" />
+            </div>
+            <div class="d-flex mt-3">
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="public"
+                  :value="true"
+                  v-model="isPublic"
+                />
+                <label for="public" class="mr-3">Public</label>
+              </div>
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="private"
+                  :value="false"
+                  v-model="isPublic"
+                />
+                <label for="private">Private</label>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button
@@ -46,14 +59,8 @@
           >
             Close
           </button>
-          <LoadingButton class="btn btn-primary" v-show="isLoading" />
-          <button
-            type="button"
-            class="btn btn-primary"
-            v-show="!isLoading"
-            @click="isLoading = true"
-          >
-            Create Playlist
+          <button type="button" class="btn btn-primary" @click="createPlaylist">
+            {{ isLoading ? "Loading..." : "Create Playlist" }}
           </button>
         </div>
       </div>
@@ -62,24 +69,57 @@
 </template>
 
 <script>
-import LoadingButton from "@/components/LoadingButton";
+import axios from "axios";
+import qs from "qs";
 
 export default {
   name: "CreatePlaylistModal",
-  components: {
-    LoadingButton,
-  },
+  components: {},
   data() {
     return {
       isLoading: false,
       playlistName: "",
-      isPublic: true,
+      isPublic: false,
     };
+  },
+  computed: {
+    user() {
+      return this.$store.state.user;
+    },
+    accessToken() {
+      return this.$store.state.accessToken;
+    },
   },
   methods: {
     log(val) {
       console.log(val);
     },
+    createPlaylist() {
+      this.isLoading = true;
+
+      axios
+        .post(
+          "http://localhost:3030/api/createNewPlaylist",
+          qs.stringify({
+            userID: this.user.display_name,
+            playlistName: this.playlistName,
+            isPublic: this.isPublic,
+            accessToken: this.accessToken,
+          }),
+          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+        )
+        .then((response) => {
+          console.log(response);
+        });
+
+      // console.log(response);
+    },
   },
 };
 </script>
+
+<style scoped>
+input[type="radio"] {
+  margin: 0 10px 0 10px;
+}
+</style>

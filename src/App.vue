@@ -41,7 +41,7 @@ export default {
   },
   mounted() {
     this.$cookies.remove("accessToken");
-    this.getUser();
+    this.user();
   },
   computed: {
     accessToken() {
@@ -58,13 +58,9 @@ export default {
         this.$store.commit("toggleIsLoggedIn", val);
       },
     },
-    user() {
-      return this.$store.state.user;
-    },
   },
   methods: {
     login() {
-      // this.$store.commit("toggleIsLoggedIn", true);
       window.open(
         "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private",
         "popupWindow",
@@ -75,7 +71,7 @@ export default {
     print() {
       // console.log(this.user);
     },
-    getUser() {
+    user() {
       const timer = setInterval(
         function () {
           // console.log(this.hasAccessToken);

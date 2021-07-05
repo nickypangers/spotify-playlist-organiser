@@ -9,7 +9,7 @@
           data-bs-toggle="modal"
           data-bs-target="#createPlaylistModal"
         >
-          Launch demo modal
+          Create New Playlist
         </button>
       </div>
 
@@ -87,7 +87,7 @@ export default {
     }
   },
   computed: {
-    getUser() {
+    user() {
       return this.$store.state.user;
     },
     accessToken() {
@@ -130,7 +130,7 @@ export default {
       let response = await axios.post(
         "http://localhost:3030/api/getSpotifyUserPlaylist",
         qs.stringify({
-          userId: this.getUser.display_name,
+          userId: this.user.display_name,
           accessToken: this.accessToken,
         }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
@@ -143,7 +143,7 @@ export default {
         "http://localhost:3030/api/getSpotifyPlaylistItemList",
         qs.stringify({
           playlistId: this.selectedPlaylist.id,
-          country: this.getUser.country,
+          country: this.user.country,
           accessToken: this.accessToken,
         }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }

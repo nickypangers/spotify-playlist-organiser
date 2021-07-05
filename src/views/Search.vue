@@ -50,25 +50,9 @@ export default {
     },
   },
   methods: {
-    // displayTrackArtist(track) {
-    //   var displayArtist = "";
-
-    //   let length = track.artists.length;
-
-    //   track.artists.forEach((artist, index) => {
-    //     if (index == length - 1) {
-    //       displayArtist += artist.name;
-    //     } else {
-    //       displayArtist += `${artist.name}, `;
-    //     }
-    //   });
-
-    //   return displayArtist;
-    // },
     async submitSearch() {
       if (this.query) {
         await this.searchQuery();
-        // console.log(this.result)
       } else {
         this.result = {
           artists: {
