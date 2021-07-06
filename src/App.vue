@@ -12,10 +12,13 @@
       >
     </div>
 
-    <div class="nav__action">
-      <LoginButton v-if="!isLoggedIn && !isLoading" @onclick="login" />
-      <LoadingButton v-if="isLoading" />
-      <ProfileButton v-if="isLoggedIn && !isLoading" />
+    <div class="d-flex">
+      <div class="nav__action">
+        <LoginButton v-if="!isLoggedIn && !isLoading" @onclick="login" />
+        <LoadingButton v-if="isLoading" />
+        <ProfileButton v-if="isLoggedIn && !isLoading" />
+      </div>
+      <MenuButton />
     </div>
   </div>
   <router-view />
@@ -25,6 +28,7 @@
 import LoginButton from "@/components/LoginButton.vue";
 import ProfileButton from "@/components/ProfileButton.vue";
 import LoadingButton from "@/components/LoadingButton.vue";
+import MenuButton from "@/components/MenuButton.vue";
 import axios from "axios";
 import qs from "qs";
 
@@ -33,6 +37,7 @@ export default {
     LoginButton,
     ProfileButton,
     LoadingButton,
+    MenuButton,
   },
   data() {
     return {
@@ -62,7 +67,7 @@ export default {
   methods: {
     login() {
       window.open(
-        "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private",
+        "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private+playlist-modify-public+playlist-modify-private",
         "popupWindow",
         "height=500,width=400,resizable=false"
       );
@@ -74,11 +79,9 @@ export default {
     user() {
       const timer = setInterval(
         function () {
-          // console.log(this.hasAccessToken);
-
           let accessToken = this.$cookies.get("accessToken");
 
-          if (accessToken.length == 163) {
+          if (accessToken != null) {
             clearInterval(timer);
             this.$store.commit("setAccessToken", accessToken);
             this.getSpotifyUserDetail();

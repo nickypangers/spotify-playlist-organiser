@@ -23,6 +23,13 @@
         </div>
         <div class="modal-body">
           <div class="container">
+            <div
+              class="alert alert-danger"
+              role="alert"
+              v-show="errorMessage.length > 0"
+            >
+              {{ errorMessage }}
+            </div>
             <div class="d-flex align-items-center">
               <label for="name"> Playlist Name: </label>
               &nbsp;
@@ -35,6 +42,7 @@
                   id="public"
                   :value="true"
                   v-model="isPublic"
+                  :disabled="isCollaborative"
                 />
                 <label for="public" class="mr-3">Public</label>
               </div>
@@ -48,6 +56,29 @@
                 <label for="private">Private</label>
               </div>
             </div>
+            <div class="d-flex mt-3">
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="collaborative"
+                  :value="true"
+                  v-model="isCollaborative"
+                  :disabled="isPublic"
+                />
+                <label for="collaborative" class="mr-3"
+                  >Enable collaborative</label
+                >
+              </div>
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="private"
+                  :value="false"
+                  v-model="isCollaborative"
+                />
+                <label for="collaborative">Disable collaborative</label>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -59,7 +90,11 @@
           >
             Close
           </button>
-          <button type="button" class="btn btn-primary" @click="createPlaylist">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="createPlaylistButtonPressed"
+          >
             {{ isLoading ? "Loading..." : "Create Playlist" }}
           </button>
         </div>
@@ -80,6 +115,9 @@ export default {
       isLoading: false,
       playlistName: "",
       isPublic: false,
+      isCollaborative: false,
+      desciption: "",
+      errorMessage: "",
     };
   },
   computed: {
@@ -90,29 +128,46 @@ export default {
       return this.$store.state.accessToken;
     },
   },
+  watch: {
+    isPublic(newVal) {
+      if (newVal) {
+        this.isCollaborative = false;
+      }
+    },
+    isCollaborative(newVal) {
+      if (newVal) {
+        this.isPublic = false;
+      }
+    },
+  },
   methods: {
     log(val) {
       console.log(val);
     },
-    createPlaylist() {
+    async createPlaylist() {
+      let formData = {
+        userID: this.user.id,
+        playlistName: this.playlistName,
+        isPublic: this.isPublic,
+        isCollaborative: this.isCollaborative,
+        description: this.desciption,
+        accessToken: this.accessToken,
+      };
+
+      return axios.post(
+        "http://localhost:3030/api/createNewPlaylist",
+        qs.stringify(formData),
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+    },
+    async createPlaylistButtonPressed() {
       this.isLoading = true;
-
-      axios
-        .post(
-          "http://localhost:3030/api/createNewPlaylist",
-          qs.stringify({
-            userID: this.user.display_name,
-            playlistName: this.playlistName,
-            isPublic: this.isPublic,
-            accessToken: this.accessToken,
-          }),
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-        )
-        .then((response) => {
-          console.log(response);
-        });
-
-      // console.log(response);
+      let response = await this.createPlaylist();
+      this.isLoading = false;
+      if (response.data.error.status != 0) {
+        this.errorMessage = response.data.error.message;
+        return;
+      }
     },
   },
 };
