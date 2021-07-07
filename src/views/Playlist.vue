@@ -1,16 +1,25 @@
 <template>
   <div class="playlist">
     <div class="container">
-      <div class="col-12 d-flex justify-content-between">
+      <div class="col-12 d-flex justify-content-between align-items-center">
         <span class="title">Playlist</span>
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#createPlaylistModal"
-        >
-          Create New Playlist
-        </button>
+        <div class="d-flex">
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#createPlaylistModal"
+          >
+            Create New Playlist
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary ms-2"
+            @click="initPlaylist"
+          >
+            <BIconArrowRepeat />
+          </button>
+        </div>
       </div>
 
       <div class="mt-2">
@@ -48,7 +57,7 @@
     </div>
   </div>
 
-  <CreatePlaylistModal />
+  <CreatePlaylistModal @success="initPlaylist" />
 </template>
 
 <script>
@@ -78,13 +87,7 @@ export default {
   },
   created() {},
   async mounted() {
-    this.isLoading = true;
-    await this.getPlaylist();
-    await this.getPlaylistItemList();
-    this.isLoading = false;
-    if (this.playlistList.length > 0) {
-      this.$store.commit("setPlaylist", this.playlistList[0]);
-    }
+    await this.initPlaylist();
   },
   computed: {
     user() {
@@ -113,7 +116,6 @@ export default {
     setSelectedPlaylist(playlist, index) {
       this.$store.commit("setPlaylist", playlist);
       this.setSelectedIndex(index);
-      console.log(this.$store.state.playlist);
     },
     setSelectedPlaylistItemIndex(val) {
       this.selectedPlaylistItemIndex = val;
@@ -165,6 +167,15 @@ export default {
       });
 
       return displayArtist;
+    },
+    async initPlaylist() {
+      this.isLoading = true;
+      await this.getPlaylist();
+      await this.getPlaylistItemList();
+      this.isLoading = false;
+      if (this.playlistList.length > 0) {
+        this.$store.commit("setPlaylist", this.playlistList[0]);
+      }
     },
   },
 };

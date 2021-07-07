@@ -1,13 +1,10 @@
 <template>
-  <div :class="{ selected: isSelected }">
+  <div :class="{ selected: isSelected }" class="py-2">
     <div class="playlist-button py-2 m-0">
       <div class="d-flex align-items-center">
         <p class="m-0">{{ playlist.name }}</p>
-        <Label
-          class="ms-2"
-          name="Collaborative"
-          v-if="playlist.collaborative"
-        />
+        <PublicStatusLabel class="ms-2" :isPublic="playlist.public" />
+        <CollaborativeLabel class="ms-2" v-if="playlist.collaborative" />
       </div>
       {{ playlist.tracks.total }} song(s)
     </div>
@@ -23,7 +20,7 @@
           <BIconList />
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">Edit</a></li>
+          <li><a class="dropdown-item" href="#">Edit Playlist Details</a></li>
           <li><a class="dropdown-item" href="#">Another action</a></li>
           <li><a class="dropdown-item" href="#">Something else here</a></li>
         </ul>
@@ -39,12 +36,14 @@
 </template>
 
 <script>
-import Label from "@/components/Label";
+import CollaborativeLabel from "@/components/CollaborativeLabel";
+import PublicStatusLabel from "@/components/PublicStatusLabel";
 export default {
   name: "PlaylistButton",
   props: { playlist: Object, isSelected: Boolean },
   components: {
-    Label,
+    CollaborativeLabel,
+    PublicStatusLabel,
   },
   methods: {
     log(val) {

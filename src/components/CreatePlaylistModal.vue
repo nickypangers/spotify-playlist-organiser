@@ -11,7 +11,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">
+          <h5 class="modal-title" id="createPlaylistLabel">
             Create New Playlist
           </h5>
           <button
@@ -86,6 +86,7 @@
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            aria-label="Close"
             :disabled="isLoading"
           >
             Close
@@ -96,6 +97,17 @@
             @click="createPlaylistButtonPressed"
           >
             {{ isLoading ? "Loading..." : "Create Playlist" }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            id="close"
+            ref="close"
+            hidden
+          >
+            Close
           </button>
         </div>
       </div>
@@ -110,6 +122,7 @@ import qs from "qs";
 export default {
   name: "CreatePlaylistModal",
   components: {},
+  emits: ["success"],
   data() {
     return {
       isLoading: false,
@@ -120,6 +133,7 @@ export default {
       errorMessage: "",
     };
   },
+  mounted() {},
   computed: {
     user() {
       return this.$store.state.user;
@@ -168,6 +182,12 @@ export default {
         this.errorMessage = response.data.error.message;
         return;
       }
+      console.log(`Added new playlist: ${this.playlistName}`);
+      this.closeModal();
+      this.$emit("success");
+    },
+    closeModal() {
+      this.$refs.close.click();
     },
   },
 };

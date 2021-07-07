@@ -67,7 +67,7 @@ export default {
   methods: {
     login() {
       window.open(
-        "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private+playlist-modify-public+playlist-modify-private",
+        "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private+playlist-modify-public+playlist-modify-private+playlist-read-private+playlist-read-collaborative",
         "popupWindow",
         "height=500,width=400,resizable=false"
       );
