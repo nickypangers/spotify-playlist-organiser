@@ -1,7 +1,21 @@
 <template>
   <div class="playlist">
     <div class="container">
-      <div class="col-12 d-flex justify-content-between align-items-center">
+      <div class="col-12">
+        <div class="alert-warning w-100 py-2">
+          Deleting a playlist simply means unfollowing it. Please see
+          <a
+            href="https://developer.spotify.com/documentation/general/guides/working-with-playlists/#following-and-unfollowing-a-playlist"
+            target="_blank"
+            >here</a
+          >
+          for a detailed explanation from Spotify.
+        </div>
+      </div>
+
+      <div
+        class="col-12 mt-2 d-flex justify-content-between align-items-center"
+      >
         <span class="title">Playlist</span>
         <div class="d-flex">
           <button
@@ -23,7 +37,7 @@
       </div>
 
       <div class="mt-2">
-        <div class="row">
+        <div class="row" v-if="playlistList.length > 0">
           <div class="col-6">
             <PlaylistButton
               :playlist="playlist"
@@ -31,6 +45,7 @@
               :is-selected="index == selectedIndex"
               :key="'playlist-' + index"
               @click="setSelectedPlaylist(playlist, index)"
+              @success="initPlaylist"
             />
           </div>
           <div class="col-6">
@@ -53,6 +68,7 @@
             </draggable>
           </div>
         </div>
+        <div v-else>No playlist</div>
       </div>
     </div>
   </div>
@@ -175,6 +191,7 @@ export default {
       this.isLoading = false;
       if (this.playlistList.length > 0) {
         this.$store.commit("setPlaylist", this.playlistList[0]);
+        this.setSelectedIndex(0);
       }
     },
   },

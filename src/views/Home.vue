@@ -1,12 +1,20 @@
 <template>
-  <div class="container">{{ this.$store.state.isLoggedIn }}</div>
+  <div class="container">
+    <div>
+      {{ this.$store.state.isLoggedIn }}
+    </div>
+    <div>
+      {{ this.$cookies.get("refreshToken") }}
+    </div>
+  </div>
 </template>
 
 <script>
-// @ is an alias to /src
-
 export default {
   name: "Home",
   components: {},
+  methods: {
+    getCookie() {},
+  },
 };
 </script>

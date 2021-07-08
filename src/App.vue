@@ -2,14 +2,12 @@
   <div class="nav px-3" v-if="this.$route.path != '/verify'">
     <div class="nav__logo">Spotify REplaylist</div>
     <div class="nav__content">
-      <router-link to="/" class="nav__button button">Home</router-link>
-      <router-link to="/search" class="nav__button button">Search</router-link>
-      <router-link to="/playlist" class="nav__button button"
+      <router-link to="/" class="nav-button button">Home</router-link>
+      <router-link to="/search" class="nav-button button">Search</router-link>
+      <router-link to="/playlist" class="nav-button button"
         >Playlist</router-link
       >
-      <router-link to="/profile" class="nav__button button"
-        >Profile</router-link
-      >
+      <router-link to="/profile" class="nav-button button">Profile</router-link>
     </div>
 
     <div class="d-flex">
@@ -148,7 +146,7 @@ export default {
   border-radius: 15px;
 }
 
-.nav__button {
+.nav-button {
   padding: 10px;
   min-width: 5rem;
   height: 3rem;

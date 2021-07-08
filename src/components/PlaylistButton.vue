@@ -20,9 +20,11 @@
           <BIconList />
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">Edit Playlist Details</a></li>
-          <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li><a class="dropdown-item" href="#">Something else here</a></li>
+          <li class="dropdown-item">Edit Playlist Details</li>
+          <li class="dropdown-item">Another action</li>
+          <li class="dropdown-item" @click="unfollowPlaylist">
+            Unfollow Playlist
+          </li>
         </ul>
       </div>
       <button class="btn" @click="log('test')">
@@ -38,12 +40,20 @@
 <script>
 import CollaborativeLabel from "@/components/CollaborativeLabel";
 import PublicStatusLabel from "@/components/PublicStatusLabel";
+import qs from "qs";
+import axios from "axios";
 export default {
   name: "PlaylistButton",
   props: { playlist: Object, isSelected: Boolean },
+  emits: ["success"],
   components: {
     CollaborativeLabel,
     PublicStatusLabel,
+  },
+  computed: {
+    accessToken() {
+      return this.$store.state.accessToken;
+    },
   },
   methods: {
     log(val) {
@@ -51,6 +61,21 @@ export default {
     },
     goTo(val) {
       window.open(val);
+    },
+    async unfollowPlaylist() {
+      let response = await axios.post(
+        "http://localhost:3030/api/unfollowPlaylist",
+        qs.stringify({
+          playlistID: this.playlist.id,
+          accessToken: this.accessToken,
+        }),
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+      if (response.data.success) {
+        this.$emit("success");
+      } else {
+        console.log(response.data);
+      }
     },
   },
 };
@@ -67,5 +92,9 @@ export default {
 }
 .selected {
   background: turquoise;
+}
+
+.dropdown-item {
+  cursor: pointer;
 }
 </style>
