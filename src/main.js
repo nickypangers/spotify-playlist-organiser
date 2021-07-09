@@ -6,6 +6,9 @@ import cookies from "vue3-cookies";
 import { BootstrapIconsPlugin } from "bootstrap-icons-vue";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
+
+axios.defaults.baseURL = "http://localhost:3030/api";
 
 createApp(App)
   .use(store)

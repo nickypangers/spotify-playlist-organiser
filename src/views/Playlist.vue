@@ -52,20 +52,23 @@
             <div v-show="isLoading" class="spinner-border" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
-            <draggable
-              v-show="!isLoading"
-              class="list-group"
-              :list="selectedPlaylistItemList.items"
-              item-key="selectedPlaylistItemList"
-            >
-              <template #item="{ element, index }">
-                <PlaylistItemButton
-                  :item="element"
-                  :is-selected="isPlaylistItemSelected(index)"
-                  @click="setSelectedPlaylistItemIndex(index)"
-                />
-              </template>
-            </draggable>
+            <div v-show="!isLoading">
+              <draggable
+                v-if="selectedPlaylistItemList.items.length > 0"
+                class="list-group"
+                :list="selectedPlaylistItemList.items"
+                item-key="selectedPlaylistItemList"
+              >
+                <template #item="{ element, index }">
+                  <PlaylistItemButton
+                    :item="element"
+                    :is-selected="isPlaylistItemSelected(index)"
+                    @click="setSelectedPlaylistItemIndex(index)"
+                  />
+                </template>
+              </draggable>
+              <div v-else>No Songs</div>
+            </div>
           </div>
         </div>
         <div v-else>No playlist</div>
@@ -77,6 +80,7 @@
 </template>
 
 <script>
+import cookieMixin from "@/mixins/cookieMixin";
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
@@ -92,6 +96,7 @@ export default {
     PlaylistItemButton,
     CreatePlaylistModal,
   },
+  mixins: [cookieMixin],
   data() {
     return {
       playlistList: [],
@@ -145,8 +150,10 @@ export default {
       };
     },
     async getPlaylist() {
+      await this.checkAccessTokenExpired();
+
       let response = await axios.post(
-        "http://localhost:3030/api/getSpotifyUserPlaylist",
+        "/getSpotifyUserPlaylist",
         qs.stringify({
           userId: this.user.display_name,
           accessToken: this.accessToken,
@@ -157,8 +164,10 @@ export default {
       this.playlistList = response.data.items;
     },
     async getPlaylistItemList() {
+      await this.checkAccessTokenExpired();
+
       let response = await axios.post(
-        "http://localhost:3030/api/getSpotifyPlaylistItemList",
+        "/getSpotifyPlaylistItemList",
         qs.stringify({
           playlistId: this.selectedPlaylist.id,
           country: this.user.country,

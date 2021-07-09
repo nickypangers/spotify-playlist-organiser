@@ -11,7 +11,7 @@ export default {
   mounted() {
     axios
       .post(
-        "http://localhost:3030/api/getAuthToken",
+        "/getAccessToken",
         qs.stringify({
           grantType: "authorization_code",
           code: this.$route.query.code,

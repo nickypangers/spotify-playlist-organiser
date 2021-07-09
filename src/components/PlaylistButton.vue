@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import cookieMixin from "@/mixins/cookieMixin";
 import CollaborativeLabel from "@/components/CollaborativeLabel";
 import PublicStatusLabel from "@/components/PublicStatusLabel";
 import qs from "qs";
@@ -46,6 +47,7 @@ export default {
   name: "PlaylistButton",
   props: { playlist: Object, isSelected: Boolean },
   emits: ["success"],
+  mixins: [cookieMixin],
   components: {
     CollaborativeLabel,
     PublicStatusLabel,
@@ -63,8 +65,10 @@ export default {
       window.open(val);
     },
     async unfollowPlaylist() {
+      await this.checkAccessTokenExpired();
+
       let response = await axios.post(
-        "http://localhost:3030/api/unfollowPlaylist",
+        "/unfollowPlaylist",
         qs.stringify({
           playlistID: this.playlist.id,
           accessToken: this.accessToken,

@@ -29,6 +29,7 @@ import LoadingButton from "@/components/LoadingButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import axios from "axios";
 import qs from "qs";
+import cookieMixin from "@/mixins/cookieMixin";
 
 export default {
   components: {
@@ -37,6 +38,7 @@ export default {
     LoadingButton,
     MenuButton,
   },
+  mixins: [cookieMixin],
   data() {
     return {
       isLoading: false,
@@ -89,10 +91,11 @@ export default {
         1000
       );
     },
-    getSpotifyUserDetail() {
+    async getSpotifyUserDetail() {
+      await this.checkAccessTokenExpired();
       axios
         .post(
-          "http://localhost:3030/api/getSpotifyUser",
+          "/getSpotifyUser",
           qs.stringify({ accessToken: this.accessToken }),
           {
             headers: {

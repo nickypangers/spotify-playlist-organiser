@@ -13,8 +13,6 @@
 export default {
   name: "Home",
   components: {},
-  methods: {
-    getCookie() {},
-  },
+  computed: {},
 };
 </script>

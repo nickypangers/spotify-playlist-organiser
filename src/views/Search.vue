@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import cookieMixin from "@/mixins/cookieMixin";
 import SearchResultCard from "@/components/SearchResultCard";
 import axios from "axios";
 import qs from "qs";
@@ -30,6 +31,7 @@ export default {
   components: {
     SearchResultCard,
   },
+  mixins: [cookieMixin],
   data() {
     return {
       query: "",
@@ -65,8 +67,10 @@ export default {
       }
     },
     async searchQuery() {
+      await this.checkAccessTokenExpired();
+
       let response = await axios.post(
-        "http://localhost:3030/api/searchItem",
+        "/searchItem",
         qs.stringify({
           q: this.query,
           t: this.type,

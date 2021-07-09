@@ -116,6 +116,7 @@
 </template>
 
 <script>
+import cookieMixin from "@/mixins/cookieMixin";
 import axios from "axios";
 import qs from "qs";
 
@@ -123,6 +124,7 @@ export default {
   name: "CreatePlaylistModal",
   components: {},
   emits: ["success"],
+  mixins: [cookieMixin],
   data() {
     return {
       isLoading: false,
@@ -168,13 +170,12 @@ export default {
         accessToken: this.accessToken,
       };
 
-      return axios.post(
-        "http://localhost:3030/api/createNewPlaylist",
-        qs.stringify(formData),
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-      );
+      return axios.post("/createNewPlaylist", qs.stringify(formData), {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
     },
     async createPlaylistButtonPressed() {
+      await this.checkAccessTokenExpired();
       this.isLoading = true;
       let response = await this.createPlaylist();
       this.isLoading = false;
