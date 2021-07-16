@@ -17,7 +17,11 @@
         </a>
       </li>
       <li>
-        <a class="dropdown-item" href="#">
+        <a
+          class="dropdown-item"
+          href="https://github.com/nickypangers/spotify-playlist-organiser"
+          target="_blank"
+        >
           <span class="d-flex align-items-center">
             <BIconCode /> &nbsp; Code
           </span>

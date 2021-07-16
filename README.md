@@ -1,24 +1,11 @@
-# spotify-playlist-organiser
+# Spotify REplaylist
 
-## Project setup
-```
-npm install
-```
+## Introduction
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Spotify REplaylist is an **interactive tool** that helps you manage your Spotify playlist library, such as creating, modifying and deleting playlists.
 
-### Compiles and minifies for production
-```
-npm run build
-```
+- [Spotify for Developers](https://developer.spotify.com/)
 
-### Lints and fixes files
-```
-npm run lint
-```
+## Issues
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Feel free to open an issue and I will try and solve it as soon as possible.
