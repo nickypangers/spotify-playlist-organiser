@@ -73,6 +73,13 @@
         </div>
         <div v-else>No playlist</div>
       </div>
+
+      <div class="col-12">
+        <Pagination
+          :totalPages="selectedPlaylistTotalPages"
+          @update="getPlaylistItemList"
+        />
+      </div>
     </div>
   </div>
 
@@ -86,7 +93,8 @@ import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
 import qs from "qs";
 import draggable from "vuedraggable";
-import CreatePlaylistModal from "@/components/CreatePlaylistModal.vue";
+import CreatePlaylistModal from "@/components/CreatePlaylistModal";
+import Pagination from "@/components/Pagination";
 
 export default {
   name: "Playlist",
@@ -95,13 +103,16 @@ export default {
     PlaylistButton,
     PlaylistItemButton,
     CreatePlaylistModal,
+    Pagination,
   },
   mixins: [cookieMixin],
   data() {
     return {
       playlistList: [],
       selectedIndex: 0,
-      selectedPlaylistItemList: [],
+      selectedPlaylistItemList: {
+        total: 0,
+      },
       isLoading: false,
       selectedPlaylistItemIndex: 0,
     };
@@ -109,6 +120,7 @@ export default {
   created() {},
   async mounted() {
     await this.initPlaylist();
+    console.log(this.selectedPlaylistTotalPages.length);
   },
   computed: {
     user() {
@@ -119,6 +131,9 @@ export default {
     },
     selectedPlaylist() {
       return this.playlistList[this.selectedIndex];
+    },
+    selectedPlaylistTotalPages() {
+      return Math.ceil(this.selectedPlaylistItemList.total / 10);
     },
   },
   watch: {
@@ -162,21 +177,25 @@ export default {
       );
 
       this.playlistList = response.data.items;
+      return response.data.items;
     },
-    async getPlaylistItemList() {
+    async getPlaylistItemList(offset, limit) {
       await this.checkAccessTokenExpired();
 
       let response = await axios.post(
         "/getSpotifyPlaylistItemList",
         qs.stringify({
           playlistId: this.selectedPlaylist.id,
-          country: this.user.country,
+          offset: offset,
+          limit: limit,
+          // country: this.user.country,
           accessToken: this.accessToken,
         }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
 
       this.selectedPlaylistItemList = response.data;
+      // return response.data;
     },
     displayTrackArtist(track) {
       var displayArtist = "";
@@ -196,7 +215,9 @@ export default {
     async initPlaylist() {
       this.isLoading = true;
       await this.getPlaylist();
-      await this.getPlaylistItemList();
+      // this.playlistList = await this.getPlaylist();
+      await this.getPlaylistItemList(0, 10);
+      // this.selectedPlaylistItemList = await this.getPlaylistItemList(0, 10);
       this.isLoading = false;
       if (this.playlistList.length > 0) {
         this.$store.commit("setPlaylist", this.playlistList[0]);
