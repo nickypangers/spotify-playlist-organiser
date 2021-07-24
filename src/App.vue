@@ -34,6 +34,7 @@ import MenuButton from "@/components/MenuButton.vue";
 import cookies from "js-cookie";
 import axios from "axios";
 import qs from "qs";
+import loginUrl from "@/helpers/login";
 
 export default {
   components: {
@@ -61,7 +62,7 @@ export default {
 
     function login() {
       window.open(
-        "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private+playlist-modify-public+playlist-modify-private+playlist-read-private+playlist-read-collaborative",
+        loginUrl(),
         "popupWindow",
         "height=500,width=400,resizable=false"
       );
@@ -106,6 +107,7 @@ export default {
       console.log("hi");
       cookies.remove("accessToken");
       getUser();
+      console.log(loginUrl());
     });
 
     return {

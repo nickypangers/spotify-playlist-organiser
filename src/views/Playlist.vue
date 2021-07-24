@@ -58,6 +58,7 @@
                 class="list-group"
                 :list="selectedPlaylistItemList.items"
                 item-key="selectedPlaylistItemList"
+                @end="reorderPlaylistItem"
               >
                 <template #item="{ element, index }">
                   <PlaylistItemButton
@@ -239,6 +240,36 @@ export default {
       selectedPlaylistCurrentPage.value = val;
     }
 
+    async function reorderPlaylistItem(event) {
+      let oldIndex = offset.value + event.oldIndex;
+      let newIndex = offset.value + event.newIndex + 1;
+
+      console.log("oldIndex", oldIndex);
+      console.log("newIndex", newIndex);
+
+      let response = await axios.post(
+        "/reorderPlaylistItem",
+        qs.stringify({
+          playlistID: selectedPlaylist.value.id,
+          rangeStart: oldIndex,
+          insertBefore: newIndex,
+          rangeLength: 1,
+          snapshotId: selectedPlaylist.value.snapshot_id,
+          accessToken: accessToken.value,
+        }),
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+
+      console.log(response.data);
+
+      if (response.data.error != null) {
+        console.log("unable to reorder");
+        return;
+      }
+
+      console.log("successfully reorder");
+    }
+
     watch(selectedIndex, async (newVal, oldVal) => {
       if (newVal != oldVal) {
         isLoading.value = true;
@@ -275,6 +306,7 @@ export default {
       displayTrackArtist: displayTrackArtist,
       initPlaylist: initPlaylist,
       setSelectedPlaylistCurrentPage: setSelectedPlaylistCurrentPage,
+      reorderPlaylistItem: reorderPlaylistItem,
     };
   },
 };

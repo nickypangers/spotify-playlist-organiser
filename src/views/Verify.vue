@@ -30,6 +30,12 @@ export default {
 
           cookies.set("refreshToken", response.data.refresh_token);
 
+          let scopeList = response.data.scope.split(" ");
+
+          scopeList.forEach((scope) => {
+            cookies.set(scope, 1);
+          });
+
           window.close();
         });
     });

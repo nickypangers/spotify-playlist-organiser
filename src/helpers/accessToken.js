@@ -13,13 +13,13 @@ async function checkAccessTokenExpired() {
     return;
   }
   let response = await axios.post(
-    "/getRefreshsedAccessToken",
+    "/getRefreshedAccessToken",
     qs.stringify({
       refreshToken: cookies.get("refreshToken"),
     })
   );
 
-  cookies.set("accessToken", response.data.accessToken, {
+  cookies.set("accessToken", response.data.access_token, {
     expires: response.data.expires_in,
   });
 
