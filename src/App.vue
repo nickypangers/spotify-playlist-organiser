@@ -1,5 +1,5 @@
 <template>
-  <div class="nav px-3" v-if="this.$route.path != '/verify'">
+  <div class="nav px-3" v-if="route.path != '/verify'">
     <div class="nav__logo">Spotify REplaylist</div>
     <div class="nav__content">
       <router-link to="/" class="nav-button button">Home</router-link>
@@ -23,13 +23,17 @@
 </template>
 
 <script>
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import checkAccessTokenExpired from "@/helpers/accessToken";
 import LoginButton from "@/components/LoginButton.vue";
 import ProfileButton from "@/components/ProfileButton.vue";
 import LoadingButton from "@/components/LoadingButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
+import cookies from "js-cookie";
 import axios from "axios";
 import qs from "qs";
-import cookieMixin from "@/mixins/cookieMixin";
 
 export default {
   components: {
@@ -38,80 +42,82 @@ export default {
     LoadingButton,
     MenuButton,
   },
-  mixins: [cookieMixin],
-  data() {
-    return {
-      isLoading: false,
-    };
-  },
-  mounted() {
-    this.$cookies.remove("accessToken");
-    this.user();
-  },
-  computed: {
-    accessToken() {
-      return this.$store.state.accessToken;
-    },
-    hasAccessToken() {
-      return this.accessToken != null;
-    },
-    isLoggedIn: {
+  setup() {
+    const store = useStore();
+
+    const route = useRoute();
+
+    const isLoading = ref(false);
+    const accessToken = computed(() => store.state.accessToken);
+    const hasAccessToken = computed(() => accessToken.value == null);
+    const isLoggedIn = computed({
       get() {
-        return this.$store.state.isLoggedIn;
+        return store.state.isLoggedIn;
       },
       set(val) {
-        this.$store.commit("toggleIsLoggedIn", val);
+        store.commit("toggleIsLoggedIn", val);
       },
-    },
-  },
-  methods: {
-    login() {
+    });
+
+    function login() {
       window.open(
         "https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email+user-read-private+playlist-modify-public+playlist-modify-private+playlist-read-private+playlist-read-collaborative",
         "popupWindow",
         "height=500,width=400,resizable=false"
       );
-      this.isLoading = true;
-    },
-    print() {
-      // console.log(this.user);
-    },
-    user() {
-      const timer = setInterval(
-        function () {
-          let accessToken = this.$cookies.get("accessToken");
 
-          if (accessToken != null) {
-            clearInterval(timer);
-            this.$store.commit("setAccessToken", accessToken);
-            this.getSpotifyUserDetail();
-            return;
-          }
-        }.bind(this),
-        1000
-      );
-    },
-    async getSpotifyUserDetail() {
-      await this.checkAccessTokenExpired();
+      isLoading.value = true;
+    }
+
+    function getUser() {
+      const timer = setInterval(function () {
+        let at = cookies.get("accessToken");
+
+        if (at != null) {
+          clearInterval(timer);
+          store.commit("setAccessToken", at);
+          getSpotifyUserDetail();
+          return;
+        }
+      }, 1000);
+    }
+
+    async function getSpotifyUserDetail() {
+      await checkAccessTokenExpired();
       axios
         .post(
           "/getSpotifyUser",
-          qs.stringify({ accessToken: this.accessToken }),
+          qs.stringify({ accessToken: accessToken.value }),
           {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
             },
           }
         )
-        .then(
-          function (response) {
-            this.$store.commit("setUser", response.data);
-            this.isLoading = false;
-            this.isLoggedIn = true;
-          }.bind(this)
-        )
+        .then(function (response) {
+          store.commit("setUser", response.data);
+          isLoading.value = false;
+          isLoggedIn.value = true;
+        })
         .catch((e) => console.log(e));
-    },
+    }
+
+    onMounted(() => {
+      console.log("hi");
+      cookies.remove("accessToken");
+      getUser();
+    });
+
+    return {
+      route: route,
+      isLoading: isLoading,
+      accessToken: accessToken,
+      hasAccessToken: hasAccessToken,
+      isLoggedIn: isLoggedIn,
+      login: login,
+      getUser: getUser,
+      getSpotifyUserDetail: getSpotifyUserDetail,
+    };
   },
 };
 </script>

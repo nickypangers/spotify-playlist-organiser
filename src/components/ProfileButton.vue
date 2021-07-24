@@ -18,21 +18,17 @@ export default {
   setup() {
     const store = useStore();
 
-    const user = computed(() => store.state.user);
+    const user = computed(() => {
+      return store.state.user;
+    });
 
-    const displayName = computed(() => user.value.display_name);
+    const displayName = computed(() => {
+      return user.value.display_name;
+    });
 
     return {
       displayName: displayName,
     };
   },
-  // computed: {
-  //   user() {
-  //     return this.$store.state.user;
-  //   },
-  //   displayName() {
-  //     return this.user.display_name;
-  //   },
-  // },
 };
 </script>
