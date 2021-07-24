@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { computed } from "vue";
 export default {
   name: "PublicStatusLabel",
   props: {
@@ -13,18 +14,20 @@ export default {
       default: false,
     },
   },
-  computed: {
-    labelName() {
-      return this.isPublic ? "Public" : "Private";
-    },
-  },
-  methods: {
-    classObject() {
+  setup(props) {
+    const labelName = computed(() => (props.isPublic ? "Public" : "Private"));
+
+    function classObject() {
       return {
-        "bg-success": this.isPublic,
-        "bg-danger": !this.isPublic,
+        "bg-success": props.isPublic == true,
+        "bg-danger": props.isPublic == false,
       };
-    },
+    }
+
+    return {
+      labelName: labelName,
+      classObject: classObject,
+    };
   },
 };
 </script>

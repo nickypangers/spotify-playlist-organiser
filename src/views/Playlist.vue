@@ -71,14 +71,27 @@
             </div>
           </div>
         </div>
-        <div v-else>No playlist</div>
+        <div v-else>No playlist {{ playlistList.length }}</div>
       </div>
 
       <div class="col-12">
-        <Pagination
-          :totalPages="selectedPlaylistTotalPages"
-          @update="getPlaylistItemList"
-        />
+        <div class="w-100 d-flex justify-content-end">
+          <label for="page">Page</label>
+          <select
+            name="page"
+            id="page"
+            v-model="selectedPlaylistCurrentPage"
+            @change="getPlaylistItemList(offset, 10)"
+          >
+            <option
+              v-for="(e, i) in selectedPlaylistTotalPages"
+              :key="'page-' + e"
+              :value="i"
+            >
+              {{ e }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
@@ -87,14 +100,15 @@
 </template>
 
 <script>
-import cookieMixin from "@/mixins/cookieMixin";
+import { ref, computed, watch, onMounted } from "vue";
+import { useStore } from "vuex";
+import checkAccessTokenExpired from "@/helpers/accessToken";
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
 import qs from "qs";
 import draggable from "vuedraggable";
 import CreatePlaylistModal from "@/components/CreatePlaylistModal";
-import Pagination from "@/components/Pagination";
 
 export default {
   name: "Playlist",
@@ -103,101 +117,96 @@ export default {
     PlaylistButton,
     PlaylistItemButton,
     CreatePlaylistModal,
-    Pagination,
   },
-  mixins: [cookieMixin],
-  data() {
-    return {
-      playlistList: [],
-      selectedIndex: 0,
-      selectedPlaylistItemList: {
-        total: 0,
-      },
-      isLoading: false,
-      selectedPlaylistItemIndex: 0,
-    };
-  },
-  created() {},
-  async mounted() {
-    await this.initPlaylist();
-    console.log(this.selectedPlaylistTotalPages.length);
-  },
-  computed: {
-    user() {
-      return this.$store.state.user;
-    },
-    accessToken() {
-      return this.$store.state.accessToken;
-    },
-    selectedPlaylist() {
-      return this.playlistList[this.selectedIndex];
-    },
-    selectedPlaylistTotalPages() {
-      return Math.ceil(this.selectedPlaylistItemList.total / 10);
-    },
-  },
-  watch: {
-    async selectedIndex(newVal, oldVal) {
-      if (newVal != oldVal) {
-        this.isLoading = true;
-        await this.getPlaylistItemList();
-        this.isLoading = false;
+  setup() {
+    const store = useStore();
+
+    const playlistList = ref([]);
+    const selectedIndex = ref(0);
+    const selectedPlaylistItemList = ref({
+      total: 0,
+    });
+    const isLoading = ref(false);
+    const selectedPlaylistItemIndex = ref(0);
+    const selectedPlaylistCurrentPage = ref(1);
+
+    const user = computed(() => {
+      return store.state.user;
+    });
+    const accessToken = computed(() => {
+      return store.state.accessToken;
+    });
+    const selectedPlaylist = computed(() => {
+      return playlistList.value[selectedIndex.value];
+    });
+    const selectedPlaylistTotalPages = computed(() => {
+      let totalPage = Math.ceil(selectedPlaylistItemList.value.total / 10);
+      if (totalPage == 0) {
+        return 1;
       }
-    },
-  },
-  methods: {
-    isPlaylistItemSelected(val) {
-      return this.selectedPlaylistItemIndex == val;
-    },
-    setSelectedPlaylist(playlist, index) {
-      this.$store.commit("setPlaylist", playlist);
-      this.setSelectedIndex(index);
-    },
-    setSelectedPlaylistItemIndex(val) {
-      this.selectedPlaylistItemIndex = val;
-    },
-    setSelectedIndex(val) {
-      this.selectedIndex = val;
-    },
-    isActive(val) {
+      return totalPage;
+    });
+    const offset = computed(() => {
+      return selectedPlaylistCurrentPage.value * 10;
+    });
+
+    function isPlaylistItemSelected(val) {
+      return selectedPlaylistItemIndex.value == val;
+    }
+
+    function setSelectedPlaylist(playlist, index) {
+      store.commit("setPlaylist", playlist);
+      setSelectedIndex(index);
+    }
+
+    function setSelectedPlaylistItemIndex(val) {
+      selectedPlaylistItemIndex.value = val;
+    }
+
+    function setSelectedIndex(val) {
+      selectedIndex.value = val;
+    }
+    function isActive(val) {
       return {
-        active: this.selectedIndex == val,
+        active: selectedIndex.value == val,
       };
-    },
-    async getPlaylist() {
-      await this.checkAccessTokenExpired();
+    }
+    async function getPlaylist() {
+      await checkAccessTokenExpired();
+
+      // console.log(user.value);
 
       let response = await axios.post(
         "/getSpotifyUserPlaylist",
         qs.stringify({
-          userId: this.user.display_name,
-          accessToken: this.accessToken,
+          userId: user.value.display_name,
+          accessToken: accessToken.value,
         }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
 
-      this.playlistList = response.data.items;
-      return response.data.items;
-    },
-    async getPlaylistItemList(offset, limit) {
-      await this.checkAccessTokenExpired();
+      // console.log(response.data.items);
+      playlistList.value = response.data.items;
+    }
+
+    async function getPlaylistItemList(offset, limit) {
+      await checkAccessTokenExpired();
 
       let response = await axios.post(
         "/getSpotifyPlaylistItemList",
         qs.stringify({
-          playlistId: this.selectedPlaylist.id,
+          playlistId: selectedPlaylist.value.id,
           offset: offset,
           limit: limit,
-          // country: this.user.country,
-          accessToken: this.accessToken,
+          accessToken: accessToken.value,
         }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
 
-      this.selectedPlaylistItemList = response.data;
-      // return response.data;
-    },
-    displayTrackArtist(track) {
+      selectedPlaylistItemList.value = response.data;
+    }
+
+    function displayTrackArtist(track) {
       var displayArtist = "";
 
       let length = track.artists.length;
@@ -211,19 +220,62 @@ export default {
       });
 
       return displayArtist;
-    },
-    async initPlaylist() {
-      this.isLoading = true;
-      await this.getPlaylist();
-      // this.playlistList = await this.getPlaylist();
-      await this.getPlaylistItemList(0, 10);
-      // this.selectedPlaylistItemList = await this.getPlaylistItemList(0, 10);
-      this.isLoading = false;
-      if (this.playlistList.length > 0) {
-        this.$store.commit("setPlaylist", this.playlistList[0]);
-        this.setSelectedIndex(0);
+    }
+    async function initPlaylist() {
+      isLoading.value = true;
+      await getPlaylist();
+      await getPlaylistItemList(0, 10);
+      isLoading.value = false;
+      if (playlistList.value == null) {
+        console.log("No items.");
+        return;
       }
-    },
+      store.commit("setPlaylist", playlistList.value[0]);
+      setSelectedIndex(0);
+      setSelectedPlaylistCurrentPage(0);
+    }
+
+    function setSelectedPlaylistCurrentPage(val) {
+      selectedPlaylistCurrentPage.value = val;
+    }
+
+    watch(selectedIndex, async (newVal, oldVal) => {
+      if (newVal != oldVal) {
+        isLoading.value = true;
+        await getPlaylistItemList(0, 10);
+        isLoading.value = false;
+      }
+    });
+
+    onMounted(async () => {
+      // console.log(accessToken.value);
+      await initPlaylist();
+      // console.log(selectedPlaylistTotalPages);
+    });
+
+    return {
+      playlistList: playlistList,
+      selectedIndex: selectedIndex,
+      selectedPlaylistItemList: selectedPlaylistItemList,
+      isLoading: isLoading,
+      selectedPlaylistItemIndex: selectedPlaylistItemIndex,
+      selectedPlaylistCurrentPage: selectedPlaylistCurrentPage,
+      user: user,
+      accessToken: accessToken,
+      selectedPlaylist: selectedPlaylist,
+      selectedPlaylistTotalPages: selectedPlaylistTotalPages,
+      offset: offset,
+      isPlaylistItemSelected: isPlaylistItemSelected,
+      setSelectedPlaylist: setSelectedPlaylist,
+      setSelectedPlaylistItemIndex: setSelectedPlaylistItemIndex,
+      setSelectedIndex: setSelectedIndex,
+      isActive: isActive,
+      getPlaylist: getPlaylist,
+      getPlaylistItemList: getPlaylistItemList,
+      displayTrackArtist: displayTrackArtist,
+      initPlaylist: initPlaylist,
+      setSelectedPlaylistCurrentPage: setSelectedPlaylistCurrentPage,
+    };
   },
 };
 </script>

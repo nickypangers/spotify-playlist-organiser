@@ -29,29 +29,58 @@
 </template>
 
 <script>
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
 export default {
   name: "Profile",
-  components: {
-  },
-  data() {
+  components: {},
+  setup() {
+    const store = useStore();
+
+    const user = ref(store.state.user);
+
+    const profileImage = computed(() => {
+      return user.value.images.length == 0
+        ? "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
+        : user.value.images[0].url;
+    });
+
+    function goToProfileWeb() {
+      window.open(user.value.external_urls.spotify, "_blank");
+    }
+
+    function goToProfileApp() {
+      window.open(user.value.uri);
+    }
+
     return {
-      user: this.$store.state.user,
+      user: user,
+      profileImage: profileImage,
+      goToProfileWeb: goToProfileWeb,
+      goToProfileApp: goToProfileApp,
     };
   },
-  computed: {
-    profileImage () {
-      return this.user.images.length == 0 ? "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" : this.user.images[0].url
-    }
-  },
-  methods: {
-    goToProfileWeb() {
-      window.open(this.user.external_urls.spotify, "_blank")
-    },
-    goToProfileApp() {
-      window.open(this.user.uri)
-      // console.log(this.user.uri)
-    }
-  }
+  // data() {
+  //   return {
+  //     user: this.$store.state.user,
+  //   };
+  // },
+  // computed: {
+  //   profileImage() {
+  //     return this.user.images.length == 0
+  //       ? "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
+  //       : this.user.images[0].url;
+  //   },
+  // },
+  // methods: {
+  //   goToProfileWeb() {
+  //     window.open(this.user.external_urls.spotify, "_blank");
+  //   },
+  //   goToProfileApp() {
+  //     window.open(this.user.uri);
+  //     // console.log(this.user.uri)
+  //   },
+  // },
 };
 </script>
 

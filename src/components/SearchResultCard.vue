@@ -8,7 +8,7 @@
       my-4
       search-result-card
     "
-    @click="goToTrack"
+    @click="goTo(track.external_urls.spotify)"
   >
     <img
       class="d-lg-block d-none"
@@ -33,38 +33,26 @@
 </template>
 
 <script>
+import { computed } from "vue";
+import displayTrackArtist from "@/helpers/track";
+
 export default {
   name: "SearchResultCard",
   props: { track: Object },
-  computed: {
-    albumImageSmall() {
-      return this.track.album.images[2];
-    },
-    albumImageLarge() {
-      return this.track.album.images[1];
-    },
-  },
-  methods: {
-    displayTrackArtist(track) {
-      var displayArtist = "";
+  setup(props) {
+    const albumImageSmall = computed(() => props.track.album.images[2]);
+    const albumImageLarge = computed(() => props.track.album.images[1]);
 
-      let length = track.artists.length;
+    function goTo(url) {
+      window.open(url);
+    }
 
-      track.artists.forEach((artist, index) => {
-        if (index == length - 1) {
-          displayArtist += artist.name;
-        } else {
-          displayArtist += `${artist.name}, `;
-        }
-      });
-      return displayArtist;
-    },
-    log() {
-      console.log(this.track);
-    },
-    goToTrack() {
-      window.open(this.track.external_urls.spotify);
-    },
+    return {
+      albumImageSmall: albumImageSmall,
+      albumImageLarge: albumImageLarge,
+      displayTrackArtist: displayTrackArtist,
+      goTo: goTo,
+    };
   },
 };
 </script>

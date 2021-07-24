@@ -116,7 +116,10 @@
 </template>
 
 <script>
-import cookieMixin from "@/mixins/cookieMixin";
+import { ref, computed, watch } from "vue";
+import { useStore } from "vuex";
+import checkAccessTokenExpired from "@/helpers/accessToken";
+// import cookieMixin from "@/mixins/cookieMixin";
 import axios from "axios";
 import qs from "qs";
 
@@ -124,72 +127,84 @@ export default {
   name: "CreatePlaylistModal",
   components: {},
   emits: ["success"],
-  mixins: [cookieMixin],
-  data() {
-    return {
-      isLoading: false,
-      playlistName: "",
-      isPublic: false,
-      isCollaborative: false,
-      desciption: "",
-      errorMessage: "",
-    };
-  },
-  mounted() {},
-  computed: {
-    user() {
-      return this.$store.state.user;
-    },
-    accessToken() {
-      return this.$store.state.accessToken;
-    },
-  },
-  watch: {
-    isPublic(newVal) {
+  setup(props, { emit }) {
+    const store = useStore();
+
+    const isLoading = ref(false);
+    const playlistName = ref("");
+    const isPublic = ref(false);
+    const isCollaborative = ref(false);
+    const description = ref("");
+    const errorMessage = ref("");
+    const close = ref(null);
+
+    const user = computed(() => store.state.user);
+    const accessToken = computed(() => store.state.accessToken);
+
+    watch(isPublic, (newVal) => {
       if (newVal) {
-        this.isCollaborative = false;
+        isCollaborative.value = false;
       }
-    },
-    isCollaborative(newVal) {
+    });
+
+    watch(isCollaborative, (newVal) => {
       if (newVal) {
-        this.isPublic = false;
+        isPublic.value = false;
       }
-    },
-  },
-  methods: {
-    log(val) {
+    });
+
+    function log(val) {
       console.log(val);
-    },
-    async createPlaylist() {
+    }
+
+    async function createPlaylist() {
       let formData = {
-        userID: this.user.id,
-        playlistName: this.playlistName,
-        isPublic: this.isPublic,
-        isCollaborative: this.isCollaborative,
-        description: this.desciption,
-        accessToken: this.accessToken,
+        userID: user.value.id,
+        playlistName: playlistName.value,
+        isPublic: isPublic.value,
+        isCollaborative: isCollaborative.value,
+        description: description.value,
+        accessToken: accessToken.value,
+        close: close,
       };
 
       return axios.post("/createNewPlaylist", qs.stringify(formData), {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
-    },
-    async createPlaylistButtonPressed() {
-      await this.checkAccessTokenExpired();
-      this.isLoading = true;
-      let response = await this.createPlaylist();
-      this.isLoading = false;
+    }
+
+    async function createPlaylistButtonPressed() {
+      await checkAccessTokenExpired();
+      isLoading.value = true;
+      let response = await createPlaylist();
+      isLoading.value = false;
       if (response.data.error.status != 0) {
-        this.errorMessage = response.data.error.message;
+        errorMessage.value = response.data.error.message;
         return;
       }
-      console.log(`Added new playlist: ${this.playlistName}`);
-      this.closeModal();
-      this.$emit("success");
-    },
-    closeModal() {
-      this.$refs.close.click();
-    },
+      console.log(`Added new playlist: ${playlistName.value}`);
+      closeModal();
+      emit("success");
+    }
+
+    function closeModal() {
+      close.value.click();
+    }
+
+    return {
+      isLoading: isLoading,
+      playlistName: playlistName,
+      isPublic: isPublic,
+      isCollaborative: isCollaborative,
+      description: description,
+      errorMessage: errorMessage,
+      user: user,
+      accessToken: accessToken,
+      log: log,
+      createPlaylistButtonPressed: createPlaylistButtonPressed,
+      close: close,
+      closeModal: closeModal,
+    };
   },
 };
 </script>

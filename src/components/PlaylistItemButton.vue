@@ -11,6 +11,9 @@
 </template>
 
 <script>
+import { computed } from "vue";
+import displayTrackArtist from "@/helpers/track";
+
 export default {
   name: "PlaylistItemButton",
   props: {
@@ -20,30 +23,15 @@ export default {
       default: false,
     },
   },
-  computed: {
-    spotifyTrackUrl() {
-      return this.item.track.external_urls.spotify;
-    },
-  },
-  methods: {
-    displayTrackArtist(track) {
-      var displayArtist = "";
+  setup(props) {
+    const spotifyTrackUrl = computed(
+      () => props.item.track.external_urls.spotify
+    );
 
-      let length = track.artists.length;
-
-      track.artists.forEach((artist, index) => {
-        if (index == length - 1) {
-          displayArtist += artist.name;
-        } else {
-          displayArtist += `${artist.name}, `;
-        }
-      });
-
-      return displayArtist;
-    },
-    // goToTrack() {
-    //   window.open(this.spotifyTrackUrl, "_blank");
-    // },
+    return {
+      spotifyTrackUrl: spotifyTrackUrl,
+      displayTrackArtist: displayTrackArtist,
+    };
   },
 };
 </script>

@@ -13,6 +13,5 @@
 export default {
   name: "Home",
   components: {},
-  computed: {},
 };
 </script>

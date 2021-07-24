@@ -41,7 +41,6 @@
 <script>
 export default {
   name: "MenuButton",
-  computed: {},
 };
 </script>
 

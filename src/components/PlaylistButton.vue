@@ -38,7 +38,9 @@
 </template>
 
 <script>
-import cookieMixin from "@/mixins/cookieMixin";
+import { computed } from "vue";
+import { useStore } from "vuex";
+import checkAccessTokenExpired from "@/helpers/accessToken";
 import CollaborativeLabel from "@/components/CollaborativeLabel";
 import PublicStatusLabel from "@/components/PublicStatusLabel";
 import qs from "qs";
@@ -47,40 +49,50 @@ export default {
   name: "PlaylistButton",
   props: { playlist: Object, isSelected: Boolean },
   emits: ["success"],
-  mixins: [cookieMixin],
   components: {
     CollaborativeLabel,
     PublicStatusLabel,
   },
-  computed: {
-    accessToken() {
-      return this.$store.state.accessToken;
-    },
-  },
-  methods: {
-    log(val) {
+  setup(props, { emit }) {
+    const store = useStore();
+
+    const accessToken = computed(() => store.state.accessToken);
+
+    function log(val) {
       console.log(val);
-    },
-    goTo(val) {
+    }
+
+    function goTo(val) {
       window.open(val);
-    },
-    async unfollowPlaylist() {
-      await this.checkAccessTokenExpired();
+    }
+
+    async function unfollowPlaylist() {
+      await checkAccessTokenExpired();
 
       let response = await axios.post(
         "/unfollowPlaylist",
         qs.stringify({
-          playlistID: this.playlist.id,
-          accessToken: this.accessToken,
+          playlistID: props.playlist.id,
+          accessToken: accessToken.value,
         }),
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
       );
+
       if (response.data.success) {
-        this.$emit("success");
+        emit("success");
       } else {
         console.log(response.data);
       }
-    },
+    }
+
+    return {
+      accessToken: accessToken,
+      log: log,
+      goTo: goTo,
+      unfollowPlaylist: unfollowPlaylist,
+    };
   },
 };
 </script>

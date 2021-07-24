@@ -22,7 +22,9 @@
 </template>
 
 <script>
-import cookieMixin from "@/mixins/cookieMixin";
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import checkAccessTokenExpired from "@/helpers/accessToken";
 import SearchResultCard from "@/components/SearchResultCard";
 import axios from "axios";
 import qs from "qs";
@@ -31,32 +33,27 @@ export default {
   components: {
     SearchResultCard,
   },
-  mixins: [cookieMixin],
-  data() {
-    return {
-      query: "",
-      type: "artist,track",
-      result: {
-        artists: {
-          items: [],
-        },
-        tracks: {
-          items: [],
-        },
+  setup() {
+    const store = useStore();
+
+    const query = ref("");
+    const type = ref("artist,track");
+    const result = ref({
+      artists: {
+        items: [],
       },
-    };
-  },
-  computed: {
-    accessToken() {
-      return this.$store.state.accessToken;
-    },
-  },
-  methods: {
-    async submitSearch() {
-      if (this.query) {
-        await this.searchQuery();
+      tracks: {
+        items: [],
+      },
+    });
+
+    const accessToken = computed(() => store.state.accessToken);
+
+    async function submitSearch() {
+      if (query.value) {
+        await searchQuery();
       } else {
-        this.result = {
+        result.value = {
           artists: {
             items: [],
           },
@@ -65,20 +62,29 @@ export default {
           },
         };
       }
-    },
-    async searchQuery() {
-      await this.checkAccessTokenExpired();
+    }
+
+    async function searchQuery() {
+      await checkAccessTokenExpired();
 
       let response = await axios.post(
         "/searchItem",
         qs.stringify({
-          q: this.query,
-          t: this.type,
-          accessToken: this.accessToken,
+          q: query.value,
+          t: type.value,
+          accessToken: accessToken.value,
         })
       );
-      this.result = response.data;
-    },
+      result.value = response.data;
+    }
+
+    return {
+      query: query,
+      type: type,
+      result: result,
+      accessToken: accessToken,
+      submitSearch: submitSearch,
+    };
   },
 };
 </script>
