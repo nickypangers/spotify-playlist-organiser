@@ -104,6 +104,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { useStore } from "vuex";
 import checkAccessTokenExpired from "@/helpers/accessToken";
+import API from "@/helpers/api";
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import axios from "axios";
@@ -177,16 +178,13 @@ export default {
 
       // console.log(user.value);
 
-      let response = await axios.post(
-        "/getSpotifyUserPlaylist",
-        qs.stringify({
-          userId: user.value.display_name,
-          accessToken: accessToken.value,
-        }),
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-      );
+      let data = {
+        userId: user.value.display_name,
+        accessToken: accessToken.value,
+      };
 
-      // console.log(response.data.items);
+      let response = await API.getSpotifyUserPlaylist(data);
+
       playlistList.value = response.data.items;
     }
 
@@ -200,8 +198,7 @@ export default {
           offset: offset,
           limit: limit,
           accessToken: accessToken.value,
-        }),
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+        })
       );
 
       selectedPlaylistItemList.value = response.data;
@@ -241,6 +238,10 @@ export default {
     }
 
     async function reorderPlaylistItem(event) {
+      if (event.oldIndex == event.newIndex) {
+        return;
+      }
+
       let oldIndex = offset.value + event.oldIndex;
       let newIndex = offset.value + event.newIndex + 1;
 
@@ -256,13 +257,14 @@ export default {
           rangeLength: 1,
           snapshotId: selectedPlaylist.value.snapshot_id,
           accessToken: accessToken.value,
-        }),
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+        })
       );
 
       console.log(response.data);
 
-      if (response.data.error != null) {
+      console.log(response.data.error);
+
+      if (response.data.error.status != 0) {
         console.log("unable to reorder");
         return;
       }

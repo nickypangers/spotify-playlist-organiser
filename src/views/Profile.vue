@@ -60,27 +60,6 @@ export default {
       goToProfileApp: goToProfileApp,
     };
   },
-  // data() {
-  //   return {
-  //     user: this.$store.state.user,
-  //   };
-  // },
-  // computed: {
-  //   profileImage() {
-  //     return this.user.images.length == 0
-  //       ? "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
-  //       : this.user.images[0].url;
-  //   },
-  // },
-  // methods: {
-  //   goToProfileWeb() {
-  //     window.open(this.user.external_urls.spotify, "_blank");
-  //   },
-  //   goToProfileApp() {
-  //     window.open(this.user.uri);
-  //     // console.log(this.user.uri)
-  //   },
-  // },
 };
 </script>
 
