@@ -10,4 +10,10 @@ export default {
 
     return response;
   },
+
+  async reorderPlaylistItem(data) {
+    let response = await axios.post("/reorderPlaylistItem", qs.stringify(data));
+
+    return response;
+  },
 };

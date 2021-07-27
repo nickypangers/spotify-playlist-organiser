@@ -103,14 +103,17 @@
 <script>
 import { ref, computed, watch, onMounted } from "vue";
 import { useStore } from "vuex";
+
 import checkAccessTokenExpired from "@/helpers/accessToken";
 import API from "@/helpers/api";
+
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
+import CreatePlaylistModal from "@/components/CreatePlaylistModal";
+
 import axios from "axios";
 import qs from "qs";
 import draggable from "vuedraggable";
-import CreatePlaylistModal from "@/components/CreatePlaylistModal";
 
 export default {
   name: "Playlist",
@@ -248,17 +251,28 @@ export default {
       console.log("oldIndex", oldIndex);
       console.log("newIndex", newIndex);
 
-      let response = await axios.post(
-        "/reorderPlaylistItem",
-        qs.stringify({
-          playlistID: selectedPlaylist.value.id,
-          rangeStart: oldIndex,
-          insertBefore: newIndex,
-          rangeLength: 1,
-          snapshotId: selectedPlaylist.value.snapshot_id,
-          accessToken: accessToken.value,
-        })
-      );
+      // let response = await axios.post(
+      //   "/reorderPlaylistItem",
+      //   qs.stringify({
+      //     playlistID: selectedPlaylist.value.id,
+      //     rangeStart: oldIndex,
+      //     insertBefore: newIndex,
+      //     rangeLength: 1,
+      //     snapshotId: selectedPlaylist.value.snapshot_id,
+      //     accessToken: accessToken.value,
+      //   })
+      // );
+
+      let formData = {
+        playlistID: selectedPlaylist.value.id,
+        rangeStart: oldIndex,
+        insertBefore: newIndex,
+        rangeLength: 1,
+        snapshotId: selectedPlaylist.value.snapshot_id,
+        accessToken: accessToken.value,
+      };
+
+      let response = await API.reorderPlaylistItem(formData);
 
       console.log(response.data);
 
