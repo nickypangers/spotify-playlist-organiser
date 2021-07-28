@@ -98,6 +98,30 @@
   </div>
 
   <CreatePlaylistModal @success="initPlaylist" />
+
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div
+      ref="toast"
+      class="toast align-items-center text-white border-0"
+      :class="{
+        'bg-danger': !isReorderSuccess,
+        'bg-success': isReorderSuccess,
+      }"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">{{ toastMessage }}</div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -114,6 +138,7 @@ import CreatePlaylistModal from "@/components/CreatePlaylistModal";
 import axios from "axios";
 import qs from "qs";
 import draggable from "vuedraggable";
+import * as bootstrap from "bootstrap";
 
 export default {
   name: "Playlist",
@@ -134,6 +159,14 @@ export default {
     const isLoading = ref(false);
     const selectedPlaylistItemIndex = ref(0);
     const selectedPlaylistCurrentPage = ref(1);
+
+    const toast = ref(null);
+
+    var toastEl = null;
+
+    const toastMessage = ref("");
+
+    const isReorderSuccess = ref(false);
 
     const user = computed(() => {
       return store.state.user;
@@ -178,8 +211,6 @@ export default {
     }
     async function getPlaylist() {
       await checkAccessTokenExpired();
-
-      // console.log(user.value);
 
       let data = {
         userId: user.value.display_name,
@@ -248,21 +279,6 @@ export default {
       let oldIndex = offset.value + event.oldIndex;
       let newIndex = offset.value + event.newIndex + 1;
 
-      console.log("oldIndex", oldIndex);
-      console.log("newIndex", newIndex);
-
-      // let response = await axios.post(
-      //   "/reorderPlaylistItem",
-      //   qs.stringify({
-      //     playlistID: selectedPlaylist.value.id,
-      //     rangeStart: oldIndex,
-      //     insertBefore: newIndex,
-      //     rangeLength: 1,
-      //     snapshotId: selectedPlaylist.value.snapshot_id,
-      //     accessToken: accessToken.value,
-      //   })
-      // );
-
       let formData = {
         playlistID: selectedPlaylist.value.id,
         rangeStart: oldIndex,
@@ -274,16 +290,17 @@ export default {
 
       let response = await API.reorderPlaylistItem(formData);
 
-      console.log(response.data);
-
-      console.log(response.data.error);
-
       if (response.data.error.status != 0) {
-        console.log("unable to reorder");
+        toastMessage.value = "Unable to reorder.";
+        isReorderSuccess.value = false;
+        toastEl.show();
         return;
       }
 
-      console.log("successfully reorder");
+      toastMessage.value = "Successfully reordered.";
+      isReorderSuccess.value = true;
+
+      toastEl.show();
     }
 
     watch(selectedIndex, async (newVal, oldVal) => {
@@ -295,14 +312,19 @@ export default {
     });
 
     onMounted(async () => {
-      // console.log(accessToken.value);
+      toastEl = new bootstrap.Toast(toast.value, {
+        autohide: true,
+        delay: 1500,
+      });
       await initPlaylist();
-      // console.log(selectedPlaylistTotalPages);
     });
 
     return {
+      toast: toast,
+      toastMessage: toastMessage,
       playlistList: playlistList,
       selectedIndex: selectedIndex,
+      isReorderSuccess: isReorderSuccess,
       selectedPlaylistItemList: selectedPlaylistItemList,
       isLoading: isLoading,
       selectedPlaylistItemIndex: selectedPlaylistItemIndex,
