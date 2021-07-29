@@ -1,10 +1,10 @@
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 import axios from "axios";
 import qs from "qs";
 import cookies from "js-cookie";
 
-async function checkAccessTokenExpired() {
-  const store = useStore();
+async function checkAccessTokenExpired(store) {
+  // const store = useStore();
 
   if (
     cookies.get("accessToken") != undefined ||

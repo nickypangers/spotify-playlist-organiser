@@ -173,7 +173,7 @@ export default {
     }
 
     async function createPlaylistButtonPressed() {
-      await checkAccessTokenExpired();
+      await checkAccessTokenExpired(store);
       isLoading.value = true;
       let response = await createPlaylist();
       isLoading.value = false;

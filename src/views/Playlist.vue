@@ -134,9 +134,6 @@ import API from "@/helpers/api";
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import CreatePlaylistModal from "@/components/CreatePlaylistModal";
-
-import axios from "axios";
-import qs from "qs";
 import draggable from "vuedraggable";
 import * as bootstrap from "bootstrap";
 
@@ -210,7 +207,7 @@ export default {
       };
     }
     async function getPlaylist() {
-      await checkAccessTokenExpired();
+      await checkAccessTokenExpired(store);
 
       let data = {
         userId: user.value.display_name,
@@ -223,17 +220,14 @@ export default {
     }
 
     async function getPlaylistItemList(offset, limit) {
-      await checkAccessTokenExpired();
+      await checkAccessTokenExpired(store);
 
-      let response = await axios.post(
-        "/getSpotifyPlaylistItemList",
-        qs.stringify({
-          playlistId: selectedPlaylist.value.id,
-          offset: offset,
-          limit: limit,
-          accessToken: accessToken.value,
-        })
-      );
+      let response = await API.getPlaylistItemList({
+        playlistId: selectedPlaylist.value.id,
+        offset: offset,
+        limit: limit,
+        accessToken: accessToken.value,
+      });
 
       selectedPlaylistItemList.value = response.data;
     }
@@ -294,6 +288,7 @@ export default {
         toastMessage.value = "Unable to reorder.";
         isReorderSuccess.value = false;
         toastEl.show();
+        console.log(toastEl);
         return;
       }
 
@@ -301,6 +296,7 @@ export default {
       isReorderSuccess.value = true;
 
       toastEl.show();
+      console.log(toastEl);
     }
 
     watch(selectedIndex, async (newVal, oldVal) => {

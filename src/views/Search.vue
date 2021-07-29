@@ -65,7 +65,7 @@ export default {
     }
 
     async function searchQuery() {
-      await checkAccessTokenExpired();
+      await checkAccessTokenExpired(store);
 
       let response = await axios.post(
         "/searchItem",

@@ -84,7 +84,7 @@ export default {
     }
 
     async function getSpotifyUserDetail() {
-      await checkAccessTokenExpired();
+      await checkAccessTokenExpired(store);
       axios
         .post(
           "/getSpotifyUser",

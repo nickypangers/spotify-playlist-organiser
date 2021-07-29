@@ -27,9 +27,10 @@
           </li>
         </ul>
       </div>
-      <button class="btn" @click="log('test')">
-        <BIconPencilFill />
-      </button>
+      <router-link to="/edit"
+        ><button class="btn" @click="log('test')">
+          <BIconPencilFill /></button
+      ></router-link>
       <button class="btn" @click="goTo(playlist.uri)">
         <BIconBoxArrowRight />
       </button>
@@ -67,7 +68,7 @@ export default {
     }
 
     async function unfollowPlaylist() {
-      await checkAccessTokenExpired();
+      await checkAccessTokenExpired(store);
 
       let response = await axios.post(
         "/unfollowPlaylist",

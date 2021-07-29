@@ -11,6 +11,17 @@ export default {
     return response;
   },
 
+  async getPlaylistItemList(data) {
+    console.log(data);
+
+    let response = await axios.post(
+      "/getSpotifyPlaylistItemList",
+      qs.stringify(data)
+    );
+
+    return response;
+  },
+
   async reorderPlaylistItem(data) {
     let response = await axios.post("/reorderPlaylistItem", qs.stringify(data));
 
