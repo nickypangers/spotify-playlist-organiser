@@ -12,8 +12,6 @@ export default {
   },
 
   async getPlaylistItemList(data) {
-    console.log(data);
-
     let response = await axios.post(
       "/getSpotifyPlaylistItemList",
       qs.stringify(data)
