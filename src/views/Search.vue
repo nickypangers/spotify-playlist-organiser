@@ -1,3 +1,4 @@
+\
 <template>
   <div class="search">
     <div class="container">
@@ -37,7 +38,6 @@ export default {
     const store = useStore();
 
     const query = ref("");
-    const type = ref("artist,track");
     const result = ref({
       artists: {
         items: [],
@@ -71,7 +71,7 @@ export default {
         "/searchItem",
         qs.stringify({
           q: query.value,
-          t: type.value,
+          t: "artist,track",
           accessToken: accessToken.value,
         })
       );
@@ -80,7 +80,6 @@ export default {
 
     return {
       query: query,
-      type: type,
       result: result,
       accessToken: accessToken,
       submitSearch: submitSearch,

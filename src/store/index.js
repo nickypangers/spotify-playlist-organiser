@@ -6,6 +6,7 @@ export default createStore({
     user: null,
     accessToken: null,
     playlist: null,
+    searchResultList: [],
   },
   mutations: {
     toggleIsLoggedIn(state, val) {
@@ -19,6 +20,9 @@ export default createStore({
     },
     setPlaylist(state, val) {
       state.playlist = val;
+    },
+    setSearchResultList(state, val) {
+      state.searchResultList = val;
     },
   },
   actions: {},

@@ -25,4 +25,10 @@ export default {
 
     return response;
   },
+
+  async searchQuery(data) {
+    let response = await axios.post("/searchItem", qs.stringify(data));
+
+    return response;
+  },
 };

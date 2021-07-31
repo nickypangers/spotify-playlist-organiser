@@ -2,16 +2,32 @@
   <div class="container">
     <div v-if="isLoading">Loading</div>
     <div v-if="!isLoading">
-      <div>
-        <button @click="goToPlaylist()">Back to Playlist</button>
-      </div>
       <div class="mt-3">
         <div class="row">
-          <div class="col-6">Search</div>
-          <div class="col-6">
+          <div
+            class="
+              col-12
+              d-flex
+              justify-content-between
+              align-items-center
+              mb-4
+            "
+          >
+            <div>
+              <button @click="goToPlaylist()">Back to Playlist</button>
+            </div>
+            <div>
+              <button @click="initPlaylistItemList">Reload</button>
+            </div>
+          </div>
+          <div class="col-lg-6 col-12">
+            <SearchSection :groupName="groupName" />
+          </div>
+          <div class="col-lg-6 col-12">
             <draggable
               class="list-group"
               :list="playlistItemList"
+              :group="groupName"
               item-key="playlistItemList"
               @end="reorderItem"
             >
@@ -59,12 +75,14 @@ import draggable from "vuedraggable";
 
 import API from "@/helpers/api";
 import * as bootstrap from "bootstrap";
+import SearchSection from "../components/SearchSection.vue";
 
 export default {
   name: "Edit",
   components: {
     draggable,
     PlaylistItemButton,
+    SearchSection,
   },
   setup() {
     const store = useStore();
@@ -77,6 +95,8 @@ export default {
 
     const isLoading = ref(false);
 
+    const groupName = "playlist";
+
     const playlistItemList = ref([]);
 
     const selectedPlaylist = computed(() => store.state.playlist);
@@ -85,6 +105,11 @@ export default {
     const playlistItemLength = computed(
       () => selectedPlaylist.value.tracks.total
     );
+
+    async function initPlaylistItemList() {
+      playlistItemList.value = [];
+      await getPlaylistItemList();
+    }
 
     async function getPlaylistItemList() {
       let loopCount = Math.ceil(playlistItemLength.value / 100);
@@ -117,7 +142,6 @@ export default {
 
     async function reorderItem(event) {
       // console.debug("oldIndex=", event.oldIndex);
-
       // console.debug("newIndex=", event.newIndex);
 
       if (event.newIndex == event.oldIndex) {
@@ -164,11 +188,13 @@ export default {
       toastMessage: toastMessage,
       isReorderSuccess: isReorderSuccess,
       isLoading: isLoading,
+      groupName: groupName,
       selectedPlaylist: selectedPlaylist,
       playlistItemList: playlistItemList,
       playlistItemLength: playlistItemLength,
       goToPlaylist: goToPlaylist,
       reorderItem: reorderItem,
+      initPlaylistItemList: initPlaylistItemList,
     };
   },
 };
