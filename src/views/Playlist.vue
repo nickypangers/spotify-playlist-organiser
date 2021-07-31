@@ -99,7 +99,7 @@
 
   <CreatePlaylistModal @success="initPlaylist" />
 
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <!-- <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
     <div
       ref="toast"
       class="toast align-items-center text-white border-0"
@@ -121,7 +121,7 @@
         ></button>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
