@@ -1,11 +1,6 @@
 <template>
-  <input type="text" name="search" id="seach" v-model="query" />
   <div>
-    <!-- <SearchResultCard
-      :track="track"
-      v-for="(track, index) in queryResult"
-      :key="'track-' + index"
-    /> -->
+    <input type="text" name="search" id="seach" v-model="query" />
     <draggable
       class="list-group"
       :list="queryResult"
@@ -45,9 +40,22 @@ export default {
     const accessToken = computed(() => store.state.accessToken);
     const queryResult = computed(() => store.state.searchResultList);
 
-    watch(query, async (newVal) => {
+    let debounceTimeout;
+    watch(query, (newVal) => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        updateSearchResultList(newVal);
+      }, 500);
+    });
+
+    async function updateSearchResultList(query) {
+      if (!query) {
+        store.commit("setSearchResultList", []);
+        return;
+      }
+
       let formData = {
-        q: newVal,
+        q: query,
         t: "artist,track",
         accessToken: accessToken.value,
       };
@@ -55,7 +63,7 @@ export default {
       let response = await API.searchQuery(formData);
 
       store.commit("setSearchResultList", response.data.tracks.items);
-    });
+    }
 
     onMounted(() => {
       store.commit("setSearchResultList", []);

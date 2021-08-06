@@ -53,21 +53,13 @@
               <span class="visually-hidden">Loading...</span>
             </div>
             <div v-show="!isLoading">
-              <draggable
-                v-if="selectedPlaylistItemList.items.length > 0"
-                class="list-group"
-                :list="selectedPlaylistItemList.items"
-                item-key="selectedPlaylistItemList"
-                @end="reorderPlaylistItem"
-              >
-                <template #item="{ element, index }">
-                  <PlaylistItemButton
-                    :item="element"
-                    :is-selected="isPlaylistItemSelected(index)"
-                    @click="setSelectedPlaylistItemIndex(index)"
-                  />
-                </template>
-              </draggable>
+              <div v-if="selectedPlaylistItemList.items.length > 0" class="row">
+                <PlaylistItemButton
+                  v-for="(item, index) in selectedPlaylistItemList.items"
+                  :key="'item-' + index"
+                  :item="item"
+                />
+              </div>
               <div v-else>No Songs</div>
             </div>
           </div>
@@ -98,30 +90,6 @@
   </div>
 
   <CreatePlaylistModal @success="initPlaylist" />
-
-  <!-- <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div
-      ref="toast"
-      class="toast align-items-center text-white border-0"
-      :class="{
-        'bg-danger': !isReorderSuccess,
-        'bg-success': isReorderSuccess,
-      }"
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-    >
-      <div class="d-flex">
-        <div class="toast-body">{{ toastMessage }}</div>
-        <button
-          type="button"
-          class="btn-close btn-close-white me-2 m-auto"
-          data-bs-dismiss="toast"
-          aria-label="Close"
-        ></button>
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <script>
@@ -134,13 +102,11 @@ import API from "@/helpers/api";
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import CreatePlaylistModal from "@/components/CreatePlaylistModal";
-import draggable from "vuedraggable";
-import * as bootstrap from "bootstrap";
 
 export default {
   name: "Playlist",
   components: {
-    draggable,
+    // draggable,
     PlaylistButton,
     PlaylistItemButton,
     CreatePlaylistModal,
@@ -156,14 +122,6 @@ export default {
     const isLoading = ref(false);
     const selectedPlaylistItemIndex = ref(0);
     const selectedPlaylistCurrentPage = ref(1);
-
-    const toast = ref(null);
-
-    var toastEl = null;
-
-    const toastMessage = ref("");
-
-    const isReorderSuccess = ref(false);
 
     const user = computed(() => {
       return store.state.user;
@@ -265,40 +223,6 @@ export default {
       selectedPlaylistCurrentPage.value = val;
     }
 
-    async function reorderPlaylistItem(event) {
-      if (event.oldIndex == event.newIndex) {
-        return;
-      }
-
-      let oldIndex = offset.value + event.oldIndex;
-      let newIndex = offset.value + event.newIndex + 1;
-
-      let formData = {
-        playlistID: selectedPlaylist.value.id,
-        rangeStart: oldIndex,
-        insertBefore: newIndex,
-        rangeLength: 1,
-        snapshotId: selectedPlaylist.value.snapshot_id,
-        accessToken: accessToken.value,
-      };
-
-      let response = await API.reorderPlaylistItem(formData);
-
-      if (response.data.error.status != 0) {
-        toastMessage.value = "Unable to reorder.";
-        isReorderSuccess.value = false;
-        toastEl.show();
-        console.log(toastEl);
-        return;
-      }
-
-      toastMessage.value = "Successfully reordered.";
-      isReorderSuccess.value = true;
-
-      toastEl.show();
-      console.log(toastEl);
-    }
-
     watch(selectedIndex, async (newVal, oldVal) => {
       if (newVal != oldVal) {
         isLoading.value = true;
@@ -308,19 +232,12 @@ export default {
     });
 
     onMounted(async () => {
-      toastEl = new bootstrap.Toast(toast.value, {
-        autohide: true,
-        delay: 1500,
-      });
       await initPlaylist();
     });
 
     return {
-      toast: toast,
-      toastMessage: toastMessage,
       playlistList: playlistList,
       selectedIndex: selectedIndex,
-      isReorderSuccess: isReorderSuccess,
       selectedPlaylistItemList: selectedPlaylistItemList,
       isLoading: isLoading,
       selectedPlaylistItemIndex: selectedPlaylistItemIndex,
@@ -340,7 +257,6 @@ export default {
       displayTrackArtist: displayTrackArtist,
       initPlaylist: initPlaylist,
       setSelectedPlaylistCurrentPage: setSelectedPlaylistCurrentPage,
-      reorderPlaylistItem: reorderPlaylistItem,
     };
   },
 };

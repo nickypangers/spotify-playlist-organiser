@@ -141,9 +141,6 @@ export default {
     }
 
     async function reorderItem(event) {
-      // console.debug("oldIndex=", event.oldIndex);
-      // console.debug("newIndex=", event.newIndex);
-
       if (event.newIndex == event.oldIndex) {
         return;
       }
