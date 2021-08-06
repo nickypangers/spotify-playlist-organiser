@@ -3,7 +3,7 @@
     <input type="text" name="search" id="seach" v-model="query" />
     <draggable
       class="list-group"
-      :list="queryResult"
+      :list="resultList"
       :group="{ name: groupName, pull: 'clone', put: false }"
       item-key="queryResult"
     >
@@ -12,23 +12,21 @@
       </template>
     </draggable>
   </div>
-  <!-- <SearchResultCard :track="element" /> -->
 </template>
 
 <script>
 import { ref, computed, watch, onMounted } from "vue";
 import { useStore } from "vuex";
 
-// import SearchResultCard from "@/components/SearchResultCard";
 import draggable from "vuedraggable";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 
 import API from "@/helpers/api";
+import track from "@/helpers/getTrackList";
 
 export default {
   name: "SearchSection",
   components: {
-    // SearchResultCard,
     draggable,
     PlaylistItemButton,
   },
@@ -39,9 +37,9 @@ export default {
     const store = useStore();
 
     const query = ref("");
+    const resultList = ref([]);
 
     const accessToken = computed(() => store.state.accessToken);
-    const queryResult = computed(() => store.state.searchResultList);
 
     let debounceTimeout;
     watch(query, (newVal) => {
@@ -53,30 +51,31 @@ export default {
 
     async function updateSearchResultList(query) {
       if (!query) {
-        store.commit("setSearchResultList", []);
+        resultList.value = [];
         return;
       }
 
-      let formData = {
-        q: query,
-        t: "artist,track",
-        accessToken: accessToken.value,
-      };
+      let response = await API.searchQuery(
+        query,
+        "artist,track",
+        accessToken.value
+      );
 
-      let response = await API.searchQuery(formData);
+      let trackList = await track.getTrackListFromSearch(
+        response.data.tracks.items,
+        accessToken.value
+      );
 
-      console.log(response.data.tracks.items);
-
-      store.commit("setSearchResultList", response.data.tracks.items);
+      resultList.value = trackList;
     }
 
     onMounted(() => {
-      store.commit("setSearchResultList", []);
+      // console.log("search section");
     });
 
     return {
       query: query,
-      queryResult: queryResult,
+      resultList: resultList,
     };
   },
 };

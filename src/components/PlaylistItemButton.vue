@@ -3,9 +3,9 @@
     class="btn playlist-item-button mb-2"
     :class="{ 'playlist-selected': isSelected }"
   >
-    <b> {{ item.track.name }} <span v-if="item.track.explicit">🅴</span> </b>
+    <b> {{ item.name }} <span v-if="item.explicit">🅴</span> </b>
     <p class="m-0">
-      {{ displayTrackArtist(item.track) }}
+      {{ displayTrackArtist(item) }}
     </p>
   </button>
 </template>
@@ -24,9 +24,7 @@ export default {
     },
   },
   setup(props) {
-    const spotifyTrackUrl = computed(
-      () => props.item.track.external_urls.spotify
-    );
+    const spotifyTrackUrl = computed(() => props.item.external_urls.spotify);
 
     return {
       spotifyTrackUrl: spotifyTrackUrl,

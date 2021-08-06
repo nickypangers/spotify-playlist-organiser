@@ -73,10 +73,11 @@ import { useRouter } from "vue-router";
 
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import draggable from "vuedraggable";
+import SearchSection from "../components/SearchSection.vue";
 
 import API from "@/helpers/api";
 import * as bootstrap from "bootstrap";
-import SearchSection from "../components/SearchSection.vue";
+import track from "@/helpers/getTrackList";
 
 export default {
   name: "Edit",
@@ -108,28 +109,34 @@ export default {
     );
 
     async function initPlaylistItemList() {
-      playlistItemList.value = [];
       await getPlaylistItemList();
     }
 
     async function getPlaylistItemList() {
-      let loopCount = Math.ceil(playlistItemLength.value / 100);
+      let itemList = [];
+
+      let loopCount = 1;
+      // let loopCount = Math.ceil(playlistItemLength.value / 100);
 
       for (let i = 0; i < loopCount; i++) {
-        let response = await API.getPlaylistItemList({
-          playlistId: selectedPlaylist.value.id,
-          offset: i * 100,
-          limit: 100,
-          accessToken: accessToken.value,
-        });
-
-        playlistItemList.value.push.apply(
-          playlistItemList.value,
-          response.data.items
+        let response = await API.getPlaylistItemList(
+          selectedPlaylist.value.id,
+          i * 100,
+          10,
+          accessToken.value
         );
+
+        response.data.items.forEach((element) => itemList.push(element));
       }
 
-      console.log(playlistItemList.value);
+      let trackList = await track.getTrackListFromPlaylist(
+        itemList,
+        accessToken.value
+      );
+
+      console.log(trackList);
+
+      playlistItemList.value = trackList;
     }
 
     function goToPlaylist() {
@@ -143,11 +150,27 @@ export default {
       toastEl.show();
     }
 
-    function insertItem(event) {
-      console.log(event);
+    async function insertItem(event) {
+      console.debug("insert=", event);
+
+      if (event.type != "add") {
+        showToast("Something went wrong. Please refresh and try again.");
+        return;
+      }
+
+      console.debug("playlist=", selectedPlaylist.value);
+
+      // let response = await API.addItemsToPlaylist(selectedPlaylist.value.id, event.newValue, );
     }
 
     async function reorderItem(event) {
+      console.debug("reorder", event);
+
+      if (event.type != "end") {
+        showToast("Something went wrong. Please refresh and try again.");
+        return;
+      }
+
       if (event.newIndex == event.oldIndex) {
         return;
       }
@@ -155,16 +178,14 @@ export default {
       let insertBefore =
         event.oldIndex > event.newIndex ? event.newIndex : event.newIndex + 1;
 
-      let formData = {
-        playlistID: selectedPlaylist.value.id,
-        rangeStart: event.oldIndex,
-        insertBefore: insertBefore,
-        rangeLength: 1,
-        snapshotId: selectedPlaylist.value.snapshot_id,
-        accessToken: accessToken.value,
-      };
-
-      let response = await API.reorderPlaylistItem(formData);
+      let response = await API.reorderPlaylistItem(
+        selectedPlaylist.value.id,
+        event.oldIndex,
+        insertBefore,
+        1,
+        selectedPlaylist.value.snapshot_id,
+        accessToken.value
+      );
 
       if (response.data.error.status != 0) {
         showToast("Unable to reorder.");

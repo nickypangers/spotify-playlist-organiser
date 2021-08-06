@@ -53,9 +53,9 @@
               <span class="visually-hidden">Loading...</span>
             </div>
             <div v-show="!isLoading">
-              <div v-if="selectedPlaylistItemList.items.length > 0" class="row">
+              <div v-if="selectedPlaylistItemList.length > 0" class="row">
                 <PlaylistItemButton
-                  v-for="(item, index) in selectedPlaylistItemList.items"
+                  v-for="(item, index) in selectedPlaylistItemList"
                   :key="'item-' + index"
                   :item="item"
                 />
@@ -67,7 +67,7 @@
         <div v-else>No playlist {{ playlistList.length }}</div>
       </div>
 
-      <div class="col-12">
+      <!-- <div class="col-12">
         <div class="w-100 d-flex justify-content-end">
           <label for="page">Page</label>
           <select
@@ -85,7 +85,7 @@
             </option>
           </select>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 
@@ -98,6 +98,7 @@ import { useStore } from "vuex";
 
 import checkAccessTokenExpired from "@/helpers/accessToken";
 import API from "@/helpers/api";
+import track from "@/helpers/getTrackList";
 
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
@@ -167,12 +168,10 @@ export default {
     async function getPlaylist() {
       await checkAccessTokenExpired(store);
 
-      let data = {
-        userId: user.value.display_name,
-        accessToken: accessToken.value,
-      };
-
-      let response = await API.getSpotifyUserPlaylist(data);
+      let response = await API.getSpotifyUserPlaylist(
+        user.value.display_name,
+        accessToken.value
+      );
 
       playlistList.value = response.data.items;
     }
@@ -180,14 +179,23 @@ export default {
     async function getPlaylistItemList(offset, limit) {
       await checkAccessTokenExpired(store);
 
-      let response = await API.getPlaylistItemList({
-        playlistId: selectedPlaylist.value.id,
-        offset: offset,
-        limit: limit,
-        accessToken: accessToken.value,
-      });
+      let response = await API.getPlaylistItemList(
+        selectedPlaylist.value.id,
+        offset,
+        limit,
+        accessToken.value
+      );
 
-      selectedPlaylistItemList.value = response.data;
+      console.debug("playlist item list=", response.data);
+
+      let trackList = await track.getTrackListFromPlaylist(
+        response.data.items,
+        accessToken.value
+      );
+
+      console.debug("track list=", trackList);
+
+      selectedPlaylistItemList.value = trackList;
     }
 
     function displayTrackArtist(track) {
