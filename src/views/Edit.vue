@@ -29,6 +29,7 @@
               :list="playlistItemList"
               :group="groupName"
               item-key="playlistItemList"
+              @add="insertItem"
               @end="reorderItem"
             >
               <template #item="{ element }">
@@ -127,6 +128,8 @@ export default {
           response.data.items
         );
       }
+
+      console.log(playlistItemList.value);
     }
 
     function goToPlaylist() {
@@ -138,6 +141,10 @@ export default {
     function showToast(msg) {
       toastMessage.value = msg;
       toastEl.show();
+    }
+
+    function insertItem(event) {
+      console.log(event);
     }
 
     async function reorderItem(event) {
@@ -192,6 +199,7 @@ export default {
       goToPlaylist: goToPlaylist,
       reorderItem: reorderItem,
       initPlaylistItemList: initPlaylistItemList,
+      insertItem: insertItem,
     };
   },
 };

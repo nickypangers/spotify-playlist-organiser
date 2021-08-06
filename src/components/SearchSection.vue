@@ -8,26 +8,29 @@
       item-key="queryResult"
     >
       <template #item="{ element }">
-        <SearchResultCard :track="element" />
+        <PlaylistItemButton :item="element" />
       </template>
     </draggable>
   </div>
+  <!-- <SearchResultCard :track="element" /> -->
 </template>
 
 <script>
 import { ref, computed, watch, onMounted } from "vue";
 import { useStore } from "vuex";
 
-import SearchResultCard from "@/components/SearchResultCard";
+// import SearchResultCard from "@/components/SearchResultCard";
 import draggable from "vuedraggable";
+import PlaylistItemButton from "@/components/PlaylistItemButton";
 
 import API from "@/helpers/api";
 
 export default {
   name: "SearchSection",
   components: {
-    SearchResultCard,
+    // SearchResultCard,
     draggable,
+    PlaylistItemButton,
   },
   props: {
     groupName: String,
@@ -61,6 +64,8 @@ export default {
       };
 
       let response = await API.searchQuery(formData);
+
+      console.log(response.data.tracks.items);
 
       store.commit("setSearchResultList", response.data.tracks.items);
     }
