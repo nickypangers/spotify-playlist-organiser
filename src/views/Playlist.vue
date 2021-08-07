@@ -186,14 +186,14 @@ export default {
         accessToken.value
       );
 
-      console.debug("playlist item list=", response.data);
+      // console.debug("playlist item list=", response.data);
 
       let trackList = await track.getTrackListFromPlaylist(
         response.data.items,
         accessToken.value
       );
 
-      console.debug("track list=", trackList);
+      // console.debug("track list=", trackList);
 
       selectedPlaylistItemList.value = trackList;
     }

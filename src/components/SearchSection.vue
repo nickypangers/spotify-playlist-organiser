@@ -2,7 +2,7 @@
   <div>
     <input type="text" name="search" id="seach" v-model="query" />
     <draggable
-      class="list-group"
+      class="list-group mt-3"
       :list="resultList"
       :group="{ name: groupName, pull: 'clone', put: false }"
       item-key="queryResult"
@@ -37,9 +37,9 @@ export default {
     const store = useStore();
 
     const query = ref("");
-    const resultList = ref([]);
 
     const accessToken = computed(() => store.state.accessToken);
+    const resultList = computed(() => store.state.searchResultList);
 
     let debounceTimeout;
     watch(query, (newVal) => {
@@ -51,7 +51,7 @@ export default {
 
     async function updateSearchResultList(query) {
       if (!query) {
-        resultList.value = [];
+        setSearchResultList([]);
         return;
       }
 
@@ -66,11 +66,16 @@ export default {
         accessToken.value
       );
 
-      resultList.value = trackList;
+      // resultList.value = trackList;
+      setSearchResultList(trackList);
+    }
+
+    function setSearchResultList(val) {
+      store.commit("setSearchResultList", val);
     }
 
     onMounted(() => {
-      // console.log("search section");
+      setSearchResultList([]);
     });
 
     return {

@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ selected: isSelected }" class="py-2">
-    <div class="playlist-button py-2 m-0">
+  <div :class="{ selected: isSelected }" class="playlist-button py-2">
+    <div class="playlist-inner-button py-2 m-0">
       <div class="d-flex align-items-center">
         <p class="m-0">{{ playlist.name }}</p>
         <PublicStatusLabel class="ms-2" :isPublic="playlist.public" />
@@ -100,6 +100,10 @@ export default {
 
 <style scoped>
 .playlist-button {
+  border-radius: 20px;
+}
+
+.playlist-inner-button {
   min-height: 2rem;
   word-wrap: break-word;
   margin: 0.5rem 0;

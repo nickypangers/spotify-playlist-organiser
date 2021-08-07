@@ -103,10 +103,10 @@ export default {
 
     const selectedPlaylist = computed(() => store.state.playlist);
     const accessToken = computed(() => store.state.accessToken);
-
     const playlistItemLength = computed(
       () => selectedPlaylist.value.tracks.total
     );
+    const searchResultList = computed(() => store.state.searchResultList);
 
     async function initPlaylistItemList() {
       await getPlaylistItemList();
@@ -134,7 +134,7 @@ export default {
         accessToken.value
       );
 
-      console.log(trackList);
+      // console.log(trackList);
 
       playlistItemList.value = trackList;
     }
@@ -158,9 +158,27 @@ export default {
         return;
       }
 
-      console.debug("playlist=", selectedPlaylist.value);
+      let track = searchResultList.value[event.oldIndex];
 
-      // let response = await API.addItemsToPlaylist(selectedPlaylist.value.id, event.newValue, );
+      console.debug("track=", track);
+
+      let response = await API.addItemsToPlaylist(
+        selectedPlaylist.value.id,
+        event.newIndex,
+        track.uri,
+        accessToken.value
+      );
+
+      console.log(response);
+
+      if (response.data.error.status != 0) {
+        showToast(response.data.error.message);
+        isReorderSuccess.value = false;
+        return;
+      }
+
+      showToast(`Added ${track.name} to ${selectedPlaylist.value.name}.`);
+      isReorderSuccess.value = true;
     }
 
     async function reorderItem(event) {
