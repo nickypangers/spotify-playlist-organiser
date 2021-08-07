@@ -95,4 +95,19 @@ export default {
 
     return response;
   },
+
+  async removeItemFromPlaylist(playlistId, uri, accessToken) {
+    let formData = {
+      playlistId: playlistId,
+      uri: uri,
+      accessToken: accessToken,
+    };
+
+    let response = await axios.post(
+      "/removeItemFromPlaylist",
+      qs.stringify(formData)
+    );
+
+    return response;
+  },
 };

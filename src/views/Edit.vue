@@ -1,30 +1,27 @@
 <template>
   <div class="container">
-    <div v-if="isLoading">Loading</div>
-    <div v-if="!isLoading">
-      <div class="mt-3">
-        <div class="row">
-          <div
-            class="
-              col-12
-              d-flex
-              justify-content-between
-              align-items-center
-              mb-4
-            "
-          >
-            <div>
-              <button @click="goToPlaylist()">Back to Playlist</button>
-            </div>
-            <div>
-              <button @click="initPlaylistItemList">Reload</button>
-            </div>
+    <div class="mt-3">
+      <div class="row">
+        <div
+          class="col-12 d-flex justify-content-between align-items-center mb-4"
+        >
+          <div>
+            <button @click="goToPlaylist()">Back to Playlist</button>
           </div>
-          <div class="col-lg-6 col-12">
-            <SearchSection :groupName="groupName" />
+          <div>
+            <RefreshButton @click="initPlaylistItemList" />
           </div>
-          <div class="col-lg-6 col-12">
+        </div>
+        <div class="col-lg-6 col-12">
+          <SearchSection :groupName="groupName" />
+        </div>
+        <div class="col-lg-6 col-12">
+          <div v-if="isLoading" class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div v-if="isLoading == false">
             <draggable
+              v-if="playlistItemList.length > 0"
               class="list-group"
               :list="playlistItemList"
               :group="groupName"
@@ -33,34 +30,38 @@
               @end="reorderItem"
             >
               <template #item="{ element }">
-                <PlaylistItemButton :item="element" />
+                <PlaylistItemEditButton
+                  :item="element"
+                  @showToast="showToast"
+                />
               </template>
             </draggable>
+            <div v-if="playlistItemList.length == 0">No songs yet.</div>
           </div>
         </div>
       </div>
     </div>
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-      <div
-        ref="toast"
-        class="toast align-items-center text-white border-0"
-        :class="{
-          'bg-danger': !isReorderSuccess,
-          'bg-success': isReorderSuccess,
-        }"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-      >
-        <div class="d-flex">
-          <div class="toast-body">{{ toastMessage }}</div>
-          <button
-            type="button"
-            class="btn-close btn-close-white me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
+  </div>
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div
+      ref="toast"
+      class="toast align-items-center text-white border-0"
+      :class="{
+        'bg-danger': !isReorderSuccess,
+        'bg-success': isReorderSuccess,
+      }"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">{{ toastMessage }}</div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
       </div>
     </div>
   </div>
@@ -71,9 +72,10 @@ import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
-import PlaylistItemButton from "@/components/PlaylistItemButton";
+import PlaylistItemEditButton from "@/components/PlaylistItemEditButton";
 import draggable from "vuedraggable";
 import SearchSection from "../components/SearchSection.vue";
+import RefreshButton from "@/components/RefreshButton";
 
 import API from "@/helpers/api";
 import * as bootstrap from "bootstrap";
@@ -83,8 +85,9 @@ export default {
   name: "Edit",
   components: {
     draggable,
-    PlaylistItemButton,
+    PlaylistItemEditButton,
     SearchSection,
+    RefreshButton,
   },
   setup() {
     const store = useStore();
@@ -113,6 +116,8 @@ export default {
     }
 
     async function getPlaylistItemList() {
+      isLoading.value = true;
+
       let itemList = [];
 
       let loopCount = 1;
@@ -137,6 +142,8 @@ export default {
       // console.log(trackList);
 
       playlistItemList.value = trackList;
+
+      isLoading.value = false;
     }
 
     function goToPlaylist() {
@@ -146,13 +153,12 @@ export default {
     }
 
     function showToast(msg) {
+      console.log(msg);
       toastMessage.value = msg;
       toastEl.show();
     }
 
     async function insertItem(event) {
-      console.debug("insert=", event);
-
       if (event.type != "add") {
         showToast("Something went wrong. Please refresh and try again.");
         return;
@@ -160,16 +166,12 @@ export default {
 
       let track = searchResultList.value[event.oldIndex];
 
-      console.debug("track=", track);
-
       let response = await API.addItemsToPlaylist(
         selectedPlaylist.value.id,
         event.newIndex,
         track.uri,
         accessToken.value
       );
-
-      console.log(response);
 
       if (response.data.error.status != 0) {
         showToast(response.data.error.message);
@@ -182,8 +184,6 @@ export default {
     }
 
     async function reorderItem(event) {
-      console.debug("reorder", event);
-
       if (event.type != "end") {
         showToast("Something went wrong. Please refresh and try again.");
         return;
@@ -221,9 +221,9 @@ export default {
         autohide: true,
         delay: 1500,
       });
-      isLoading.value = true;
+      // isLoading.value = true;
       await getPlaylistItemList();
-      isLoading.value = false;
+      // isLoading.value = false;
     });
 
     return {
@@ -239,6 +239,7 @@ export default {
       reorderItem: reorderItem,
       initPlaylistItemList: initPlaylistItemList,
       insertItem: insertItem,
+      showToast: showToast,
     };
   },
 };

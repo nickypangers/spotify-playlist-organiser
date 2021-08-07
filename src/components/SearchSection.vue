@@ -1,16 +1,33 @@
 <template>
   <div>
-    <input type="text" name="search" id="seach" v-model="query" />
-    <draggable
-      class="list-group mt-3"
-      :list="resultList"
-      :group="{ name: groupName, pull: 'clone', put: false }"
-      item-key="queryResult"
-    >
-      <template #item="{ element }">
-        <PlaylistItemButton :item="element" />
-      </template>
-    </draggable>
+    <input
+      type="text"
+      name="search"
+      id="seach"
+      v-model="query"
+      placeholder="Search Here..."
+    />
+    <div class="mt-3">
+      <div v-if="isLoading == true">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <div v-if="isLoading == false">
+        <draggable
+          v-if="resultList.length > 0"
+          class="list-group"
+          :list="resultList"
+          :group="{ name: groupName, pull: 'clone', put: false }"
+          item-key="queryResult"
+        >
+          <template #item="{ element }">
+            <PlaylistItemButton :item="element" />
+          </template>
+        </draggable>
+        <div v-if="resultList.length == 0">Enter something to search</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -36,6 +53,8 @@ export default {
   setup() {
     const store = useStore();
 
+    const isLoading = ref(false);
+
     const query = ref("");
 
     const accessToken = computed(() => store.state.accessToken);
@@ -52,8 +71,11 @@ export default {
     async function updateSearchResultList(query) {
       if (!query) {
         setSearchResultList([]);
+        isLoading.value = false;
         return;
       }
+
+      isLoading.value = true;
 
       let response = await API.searchQuery(
         query,
@@ -68,6 +90,8 @@ export default {
 
       // resultList.value = trackList;
       setSearchResultList(trackList);
+
+      isLoading.value = false;
     }
 
     function setSearchResultList(val) {
@@ -81,6 +105,7 @@ export default {
     return {
       query: query,
       resultList: resultList,
+      isLoading: isLoading,
     };
   },
 };

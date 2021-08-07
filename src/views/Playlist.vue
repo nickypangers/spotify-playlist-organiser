@@ -26,13 +26,14 @@
           >
             Create New Playlist
           </button>
-          <button
+          <!-- <button
             type="button"
             class="btn btn-secondary ms-2"
-            @click="initPlaylist"
+            @click="getPlaylistItemList(0, 10)"
           >
             <BIconArrowRepeat />
-          </button>
+          </button> -->
+          <RefreshButton @click="getPlaylistItemList(0, 10)" class="ms-2" />
         </div>
       </div>
 
@@ -103,6 +104,7 @@ import track from "@/helpers/getTrackList";
 import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import CreatePlaylistModal from "@/components/CreatePlaylistModal";
+import RefreshButton from "@/components/RefreshButton";
 
 export default {
   name: "Playlist",
@@ -111,6 +113,7 @@ export default {
     PlaylistButton,
     PlaylistItemButton,
     CreatePlaylistModal,
+    RefreshButton,
   },
   setup() {
     const store = useStore();
@@ -177,6 +180,8 @@ export default {
     }
 
     async function getPlaylistItemList(offset, limit) {
+      isLoading.value = true;
+
       await checkAccessTokenExpired(store);
 
       let response = await API.getPlaylistItemList(
@@ -186,16 +191,14 @@ export default {
         accessToken.value
       );
 
-      // console.debug("playlist item list=", response.data);
-
       let trackList = await track.getTrackListFromPlaylist(
         response.data.items,
         accessToken.value
       );
 
-      // console.debug("track list=", trackList);
-
       selectedPlaylistItemList.value = trackList;
+
+      isLoading.value = false;
     }
 
     function displayTrackArtist(track) {
