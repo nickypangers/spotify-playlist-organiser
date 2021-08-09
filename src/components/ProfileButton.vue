@@ -1,10 +1,10 @@
 <template>
   <button
-    class="action_button button"
+    class="action-button button"
     @click="this.$emit('onclick')"
     id="profileMenuButton"
   >
-    <p class="m-0 action_button_text">
+    <p class="m-0 action-button-text">
       {{ displayName }}
     </p>
   </button>

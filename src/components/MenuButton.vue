@@ -44,15 +44,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .menu-button {
-  background: white;
+  background: transparent;
+  color: $white;
   border: none;
   outline: none;
   border-radius: 15px;
   height: 3rem;
   width: 3rem;
   margin: 0px 5px;
-  background-color: rgb(247, 248, 250);
 }
 </style>

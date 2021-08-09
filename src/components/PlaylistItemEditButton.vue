@@ -40,7 +40,7 @@ export default {
       default: false,
     },
   },
-  emits: ["remove", "remove"],
+  emits: ["showToast", "remove"],
   setup(props, { emit }) {
     const store = useStore();
 

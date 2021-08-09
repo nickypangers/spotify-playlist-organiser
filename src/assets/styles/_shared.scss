@@ -1,0 +1,36 @@
+// colors
+$bg-color: #ffffff;
+$nav-bg-color: #262422;
+$nav-button-bg-color: #262422;
+
+$white: #ffffff;
+$black: #000000;
+$green: #1cb854;
+$blue: #2e76d0;
+
+// font color
+$font-color: #262422;
+
+// action button
+.action-button {
+  border-radius: 15px;
+  height: 3rem;
+  margin: 0px 5px;
+  background-color: transparent;
+  min-width: 10rem;
+  max-width: 15rem;
+
+  &:hover {
+    .action-button-text {
+      color: $green;
+    }
+  }
+}
+
+.action-button-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: $white;
+  font-weight: bold;
+}

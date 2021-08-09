@@ -19,9 +19,11 @@
           <div v-if="isLoading" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
-          <div v-if="isLoading == false">
+          <div v-if="playlistItemList.length == 0">
+            No songs yet. Drag here to start adding.
+          </div>
+          <div>
             <draggable
-              v-if="playlistItemList.length > 0"
               class="list-group"
               :list="playlistItemList"
               :group="groupName"
@@ -37,7 +39,6 @@
                 />
               </template>
             </draggable>
-            <div v-if="playlistItemList.length == 0">No songs yet.</div>
           </div>
         </div>
       </div>
@@ -48,8 +49,8 @@
       ref="toast"
       class="toast align-items-center text-white border-0"
       :class="{
-        'bg-danger': !isReorderSuccess,
-        'bg-success': isReorderSuccess,
+        'bg-toast-error': !isReorderSuccess,
+        'bg-toast-success': isReorderSuccess,
       }"
       role="alert"
       aria-live="assertive"
@@ -247,3 +248,13 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.bg-toast-success {
+  background-color: $green;
+}
+
+.bg-toast-error {
+  background-color: red;
+}
+</style>
