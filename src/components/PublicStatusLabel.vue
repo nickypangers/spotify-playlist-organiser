@@ -19,8 +19,8 @@ export default {
 
     function classObject() {
       return {
-        "bg-success": props.isPublic == true,
-        "bg-danger": props.isPublic == false,
+        "bg-label-success": props.isPublic == true,
+        "bg-label-error": props.isPublic == false,
       };
     }
 
@@ -32,9 +32,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .public-status-label {
   border-radius: 20px;
-  color: white;
+  color: $white;
+}
+
+.bg-label-success {
+  background-color: $green;
+}
+
+.bg-label-error {
+  background-color: red;
 }
 </style>

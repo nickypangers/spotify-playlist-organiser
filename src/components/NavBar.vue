@@ -151,7 +151,7 @@ export default {
 
 .nav-content {
   display: flex;
-  // background-color: $nav-button-bg-color;
+  // background-color: $bg-nav-button;
   border-radius: 15px;
 }
 

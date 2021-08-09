@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "@/store/index.js";
-import Home from "../views/Home.vue";
-import Playlist from "../views/Playlist.vue";
-import Edit from "../views/Edit.vue";
-import Search from "../views/Search.vue";
-import Profile from "../views/Profile.vue";
-import Verify from "../views/Verify.vue";
+import Home from "@/views/Home.vue";
+import Playlist from "@/views/Playlist.vue";
+import Edit from "@/views/Edit.vue";
+import Search from "@/views/Search.vue";
+import Profile from "@/views/Profile.vue";
+import Verify from "@/views/Verify.vue";
 
 function isAuthenticated() {
   return store.state.user != null;
@@ -45,6 +45,13 @@ const routes = [
     path: "/search",
     name: "Search",
     component: Search,
+    beforeEnter(to, from, next) {
+      if (isAuthenticated()) {
+        next();
+      } else {
+        next("/");
+      }
+    },
   },
   {
     path: "/profile",
