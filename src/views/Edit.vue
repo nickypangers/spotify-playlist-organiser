@@ -29,10 +29,11 @@
               @add="insertItem"
               @end="reorderItem"
             >
-              <template #item="{ element }">
+              <template #item="{ element, index }">
                 <PlaylistItemEditButton
                   :item="element"
                   @showToast="showToast"
+                  @remove="removeItemFromPlaylist(index)"
                 />
               </template>
             </draggable>
@@ -152,15 +153,16 @@ export default {
       });
     }
 
-    function showToast(msg) {
+    function showToast(msg, state) {
       console.log(msg);
       toastMessage.value = msg;
+      isReorderSuccess.value = state;
       toastEl.show();
     }
 
     async function insertItem(event) {
       if (event.type != "add") {
-        showToast("Something went wrong. Please refresh and try again.");
+        showToast("Something went wrong. Please refresh and try again.", false);
         return;
       }
 
@@ -174,13 +176,11 @@ export default {
       );
 
       if (response.data.error.status != 0) {
-        showToast(response.data.error.message);
-        isReorderSuccess.value = false;
+        showToast(response.data.error.message, false);
         return;
       }
 
-      showToast(`Added ${track.name} to ${selectedPlaylist.value.name}.`);
-      isReorderSuccess.value = true;
+      showToast(`Added ${track.name} to ${selectedPlaylist.value.name}.`, true);
     }
 
     async function reorderItem(event) {
@@ -206,14 +206,16 @@ export default {
       );
 
       if (response.data.error.status != 0) {
-        showToast("Unable to reorder.");
-        isReorderSuccess.value = false;
+        showToast("Unable to reorder.", false);
 
         return;
       }
 
-      showToast("Successfully reordered.");
-      isReorderSuccess.value = true;
+      showToast("Successfully reordered.", true);
+    }
+
+    function removeItemFromPlaylist(index) {
+      playlistItemList.value.splice(index, 1);
     }
 
     onMounted(async () => {
@@ -240,6 +242,7 @@ export default {
       initPlaylistItemList: initPlaylistItemList,
       insertItem: insertItem,
       showToast: showToast,
+      removeItemFromPlaylist: removeItemFromPlaylist,
     };
   },
 };

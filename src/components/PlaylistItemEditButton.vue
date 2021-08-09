@@ -40,7 +40,7 @@ export default {
       default: false,
     },
   },
-  emits: ["showToast"],
+  emits: ["remove", "remove"],
   setup(props, { emit }) {
     const store = useStore();
 
@@ -59,9 +59,13 @@ export default {
 
       console.log(response.data);
 
-      // if (response.data.error.status != 0) {
-      emit("showToast", "Unable to delete");
-      // }
+      if (response.data.error.status != 0) {
+        emit("showToast", "Unable to delete", false);
+        return;
+      }
+      emit("showToast", `Successfully deleted ${props.item.name}`, true);
+
+      emit("remove");
     }
 
     return {

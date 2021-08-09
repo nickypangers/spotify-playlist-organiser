@@ -1,6 +1,7 @@
 <template>
   <div>
     <input
+      class="w-100 py-2 px-3"
       type="text"
       name="search"
       id="seach"

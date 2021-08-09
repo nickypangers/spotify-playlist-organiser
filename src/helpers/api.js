@@ -104,7 +104,7 @@ export default {
     };
 
     let response = await axios.post(
-      "/removeItemFromPlaylist",
+      "/removeItemsFromPlaylist",
       qs.stringify(formData)
     );
 
