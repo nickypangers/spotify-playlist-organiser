@@ -6,7 +6,9 @@
           class="col-12 d-flex justify-content-between align-items-center mb-4"
         >
           <div>
-            <button @click="goToPlaylist()">Back to Playlist</button>
+            <button type="button" class="btn" @click="goToPlaylist()">
+              <BIconArrowLeftCircleFill />
+            </button>
           </div>
           <div>
             <RefreshButton @click="initPlaylistItemList" />

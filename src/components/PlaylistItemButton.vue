@@ -2,11 +2,22 @@
   <button
     class="btn playlist-item-button mb-2"
     :class="{ 'playlist-selected': isSelected }"
+    @click="log"
   >
-    <b> {{ item.name }} <span v-if="item.explicit">🅴</span> </b>
-    <p class="m-0">
-      {{ displayTrackArtist(item) }}
-    </p>
+    <div class="d-flex">
+      <div class="img-wrapper">
+        <img :src="albumImage[2].url" alt="album" />
+      </div>
+      <div
+        class="ms-4 d-flex flex-column align-items-start justify-content-center"
+      >
+        <p class="m-0 item-name">{{ item.name }}</p>
+        <p class="m-0 item-caption">
+          <span v-if="item.explicit" class="me-2">🅴</span
+          >{{ displayTrackArtist(item) }}
+        </p>
+      </div>
+    </div>
   </button>
 </template>
 
@@ -26,9 +37,17 @@ export default {
   setup(props) {
     const spotifyTrackUrl = computed(() => props.item.external_urls.spotify);
 
+    const albumImage = computed(() => props.item.album.images);
+
+    function log() {
+      console.debug("item=", albumImage.value);
+    }
+
     return {
       spotifyTrackUrl: spotifyTrackUrl,
       displayTrackArtist: displayTrackArtist,
+      albumImage: albumImage,
+      log: log,
     };
   },
 };
@@ -40,10 +59,18 @@ export default {
 }
 
 .playlist-item-button:hover {
-  background-color: orange;
+  background-color: lightgray;
 }
 
 .playlist-selected {
-  background-color: orange;
+  background-color: lightgray;
+}
+
+.item-name {
+  font-size: 1.25rem;
+}
+
+.item-caption {
+  font-size: 0.9rem;
 }
 </style>

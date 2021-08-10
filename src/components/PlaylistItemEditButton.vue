@@ -1,16 +1,8 @@
 <template>
   <div class="d-flex align-items-stretch edit-button">
-    <button
-      class="col btn playlist-item-button mb-2"
-      :class="{ 'playlist-selected': isSelected }"
-    >
-      <b> {{ item.name }} <span v-if="item.explicit">🅴</span> </b>
-      <p class="m-0">
-        {{ displayTrackArtist(item) }}
-      </p>
-    </button>
-    <div class="ms-2 mb-2">
-      <button class="btn delete" @click="removeItemFromPlaylist">
+    <PlaylistItemButton class="col" :item="item" />
+    <div class="mb-2">
+      <button class="ms-2 btn delete" @click="removeItemFromPlaylist">
         <BIconTrash />
       </button>
     </div>
@@ -21,11 +13,15 @@
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
 
-import displayTrackArtist from "@/helpers/track";
+import PlaylistItemButton from "@/components/PlaylistItemButton";
+
 import API from "@/helpers/api";
 
 export default {
   name: "PlaylistItemEditButton",
+  components: {
+    PlaylistItemButton,
+  },
   props: {
     item: Object,
     isSelected: {
@@ -41,7 +37,6 @@ export default {
 
     const selectedPlaylist = computed(() => store.state.playlist);
     const accessToken = computed(() => store.state.accessToken);
-    const spotifyTrackUrl = computed(() => props.item.external_urls.spotify);
 
     async function removeItemFromPlaylist() {
       let response = await API.removeItemFromPlaylist(
@@ -63,8 +58,6 @@ export default {
 
     return {
       hover: hover,
-      spotifyTrackUrl: spotifyTrackUrl,
-      displayTrackArtist: displayTrackArtist,
       removeItemFromPlaylist: removeItemFromPlaylist,
     };
   },
@@ -80,18 +73,6 @@ export default {
   }
 }
 
-.playlist-item-button {
-  border: 1px solid black;
-}
-
-.playlist-item-button:hover {
-  background-color: orange;
-}
-
-.playlist-selected {
-  background-color: orange;
-}
-
 .delete {
   display: none;
   height: 100%;
@@ -99,7 +80,9 @@ export default {
   background-color: red;
 
   &:hover {
-    background-color: $green;
+    background-color: $white;
+    color: red;
+    border: 1px solid red;
   }
 }
 </style>
