@@ -26,18 +26,11 @@
           >
             Create New Playlist
           </button>
-          <!-- <button
-            type="button"
-            class="btn btn-secondary ms-2"
-            @click="getPlaylistItemList(0, 10)"
-          >
-            <BIconArrowRepeat />
-          </button> -->
           <RefreshButton @click="getPlaylistItemList(0, 10)" class="ms-2" />
         </div>
       </div>
 
-      <div class="mt-2">
+      <div class="col-12 mt-2">
         <div class="row" v-if="playlistList.length > 0">
           <div class="col-6">
             <PlaylistButton
@@ -53,9 +46,10 @@
             <div v-show="isLoading" class="spinner-border" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
-            <div v-show="!isLoading">
-              <div v-if="selectedPlaylistItemList.length > 0" class="row">
+            <div v-show="!isLoading" class="row">
+              <div v-if="selectedPlaylistItemList.length > 0">
                 <PlaylistItemButton
+                  class="col-12"
                   v-for="(item, index) in selectedPlaylistItemList"
                   :key="'item-' + index"
                   :item="item"
@@ -65,7 +59,7 @@
             </div>
           </div>
         </div>
-        <div v-else>No playlist {{ playlistList.length }}</div>
+        <div v-else>No playlist</div>
       </div>
 
       <!-- <div class="col-12">

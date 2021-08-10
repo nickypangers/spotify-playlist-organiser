@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="d-flex align-items-center"
-    @mouseover="hover = true"
-    @mouseleave="hover = false"
-  >
+  <div class="d-flex align-items-stretch edit-button">
     <button
       class="col btn playlist-item-button mb-2"
       :class="{ 'playlist-selected': isSelected }"
@@ -13,11 +9,8 @@
         {{ displayTrackArtist(item) }}
       </p>
     </button>
-    <div class="ms-2" :class="{ 'd-block': hover, 'd-none': !hover }">
-      <button
-        class="btn playlist-item-button delete mb-2"
-        @click="removeItemFromPlaylist"
-      >
+    <div class="ms-2 mb-2">
+      <button class="btn delete" @click="removeItemFromPlaylist">
         <BIconTrash />
       </button>
     </div>
@@ -78,7 +71,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.edit-button {
+  &:hover {
+    .delete {
+      display: block;
+    }
+  }
+}
+
 .playlist-item-button {
   border: 1px solid black;
 }
@@ -91,7 +92,14 @@ export default {
   background-color: orange;
 }
 
-.delete:hover {
-  background-color: #ff6b6b;
+.delete {
+  display: none;
+  height: 100%;
+  width: 4rem;
+  background-color: red;
+
+  &:hover {
+    background-color: $green;
+  }
 }
 </style>

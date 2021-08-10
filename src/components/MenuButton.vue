@@ -54,5 +54,11 @@ export default {
   height: 3rem;
   width: 3rem;
   margin: 0px 5px;
+  transition: all 0.3s ease-in-out;
+
+  &:hover,
+  &:focus {
+    color: $green;
+  }
 }
 </style>

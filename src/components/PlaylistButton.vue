@@ -113,6 +113,7 @@ export default {
 }
 .selected {
   background: turquoise;
+  transition: all 0.3s ease-in-out;
 }
 
 .dropdown-item {

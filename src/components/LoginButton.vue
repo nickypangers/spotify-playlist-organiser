@@ -9,3 +9,5 @@ export default {
   name: "LoginButton",
 };
 </script>
+
+<style lang="scss" scoped></style>

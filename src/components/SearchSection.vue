@@ -63,6 +63,12 @@ export default {
 
     let debounceTimeout;
     watch(query, (newVal) => {
+      if (newVal.length == 0) {
+        setSearchResultList([]);
+        isLoading.value = false;
+        return;
+      }
+
       clearTimeout(debounceTimeout);
       debounceTimeout = setTimeout(() => {
         updateSearchResultList(newVal);
@@ -70,12 +76,6 @@ export default {
     });
 
     async function updateSearchResultList(query) {
-      if (!query) {
-        setSearchResultList([]);
-        isLoading.value = false;
-        return;
-      }
-
       isLoading.value = true;
 
       let response = await API.searchQuery(
@@ -89,9 +89,7 @@ export default {
         accessToken.value
       );
 
-      // resultList.value = trackList;
       setSearchResultList(trackList);
-
       isLoading.value = false;
     }
 

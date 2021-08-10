@@ -163,6 +163,7 @@ export default {
   font-weight: bold;
   color: $white;
   text-decoration: none;
+  transition: all 0.3s ease-in-out;
 
   &:hover {
     color: $green;

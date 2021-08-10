@@ -16,6 +16,7 @@ button {
   background-color: $black-secondary;
   color: $white;
   border: 1px solid $black-secondary;
+  transition: all 0.3s ease-in-out;
 
   &:hover {
     background-color: $white;
