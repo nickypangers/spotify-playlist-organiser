@@ -267,4 +267,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+</style>

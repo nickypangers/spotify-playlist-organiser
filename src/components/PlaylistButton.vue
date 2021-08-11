@@ -6,7 +6,7 @@
         <PublicStatusLabel class="ms-2" :isPublic="playlist.public" />
         <CollaborativeLabel class="ms-2" v-if="playlist.collaborative" />
       </div>
-      {{ playlist.tracks.total }} song(s)
+      {{ displayTotalSongs }}
     </div>
     <hr v-if="isSelected" />
     <div class="w-100 d-flex justify-content-around" v-if="isSelected">
@@ -59,6 +59,15 @@ export default {
 
     const accessToken = computed(() => store.state.accessToken);
 
+    const displayTotalSongs = computed(() => {
+      let total = props.playlist.tracks.total;
+      if (total > 1) {
+        return `${total} songs`;
+      }
+
+      return `${total} song`;
+    });
+
     function log(val) {
       console.log(val);
     }
@@ -90,6 +99,7 @@ export default {
 
     return {
       accessToken: accessToken,
+      displayTotalSongs: displayTotalSongs,
       log: log,
       goTo: goTo,
       unfollowPlaylist: unfollowPlaylist,

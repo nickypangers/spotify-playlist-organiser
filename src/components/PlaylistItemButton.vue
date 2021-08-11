@@ -1,6 +1,6 @@
 <template>
   <button
-    class="btn playlist-item-button mb-2"
+    class="btn playlist-item-button mb-2 text-truncate"
     :class="{ 'playlist-selected': isSelected }"
     @click="log"
   >
@@ -53,7 +53,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+// .item-name {
+//   display: block;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   white-space: nowrap;
+// }
+
 .playlist-item-button {
   border: 1px solid black;
 }

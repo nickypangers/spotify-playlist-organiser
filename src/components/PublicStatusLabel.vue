@@ -34,8 +34,10 @@ export default {
 
 <style lang="scss" scoped>
 .public-status-label {
-  border-radius: 20px;
+  border-radius: 0.7rem;
   color: $white;
+  font-size: 0.9rem;
+  padding: 0.2rem 0;
 }
 
 .bg-label-success {
