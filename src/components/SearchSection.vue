@@ -1,13 +1,21 @@
 <template>
   <div>
-    <input
-      class="w-100 py-2 px-3"
-      type="text"
-      name="search"
-      id="seach"
-      v-model="query"
-      placeholder="Search Here..."
-    />
+    <div class="d-flex">
+      <input
+        class="w-100 py-2 px-3"
+        type="text"
+        name="search"
+        id="seach"
+        v-model="query"
+        placeholder="Search Here..."
+      />
+      <button
+        :class="{ 'd-block': query, 'd-none': !query }"
+        @click="query = ''"
+      >
+        <BIconXSquareFill />
+      </button>
+    </div>
     <div class="mt-3">
       <div v-if="isLoading == true">
         <div class="spinner-border" role="status">
@@ -26,7 +34,10 @@
             <PlaylistItemButton :item="element" />
           </template>
         </draggable>
-        <div v-if="resultList.length == 0">Enter something to search</div>
+        <div v-if="resultList.length == 0 && !query">
+          Enter something to search
+        </div>
+        <div v-if="resultList.length == 0 && query">No result</div>
       </div>
     </div>
   </div>
@@ -83,6 +94,8 @@ export default {
         "artist,track",
         accessToken.value
       );
+
+      console.debug("result=", response.data);
 
       let trackList = await track.getTrackListFromSearch(
         response.data.tracks.items,

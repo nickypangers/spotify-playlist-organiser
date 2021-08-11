@@ -51,6 +51,9 @@ export default {
         emit("showToast", "Unable to delete", false);
         return;
       }
+
+      await API.updateSelectedPlaylistDetail(store);
+
       emit("showToast", `Successfully deleted ${props.item.name}`, true);
 
       emit("remove");

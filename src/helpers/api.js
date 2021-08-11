@@ -2,6 +2,20 @@ import axios from "axios";
 import qs from "qs";
 
 export default {
+  async updateSelectedPlaylistDetail(store) {
+    let formData = {
+      playlistId: store.state.playlist.id,
+      accessToken: store.state.accessToken,
+    };
+
+    let response = await axios.post(
+      "/getSpotifyPlaylistDetail",
+      qs.stringify(formData)
+    );
+
+    store.commit("setPlaylist", response.data);
+  },
+
   async getSpotifyUserPlaylist(userId, accessToken) {
     let formData = {
       userId: userId,

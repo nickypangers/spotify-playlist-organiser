@@ -6,13 +6,30 @@
           class="col-12 d-flex justify-content-between align-items-center mb-4"
         >
           <div>
-            <button type="button" class="btn" @click="goToPlaylist()">
+            <!-- <button type="button" class="btn" @click="goToPlaylist()">
               <BIconArrowLeftCircleFill />
-            </button>
+            </button> -->
+            <BackToPlaylistButton @click="goToPlaylist()" />
           </div>
           <div>
             <RefreshButton @click="initPlaylistItemList" />
           </div>
+        </div>
+        <div class="col-12 mb-2 d-flex justify-content-end" v-if="!isLoading">
+          <select
+            name="page"
+            id="page"
+            v-model="currentPage"
+            @change="getPlaylistItemList(currentPage)"
+          >
+            <option
+              :value="index"
+              v-for="(page, index) in playlistTotalPage"
+              :key="'page-' + page"
+            >
+              Page {{ page }}
+            </option>
+          </select>
         </div>
         <div class="col-lg-6 col-12">
           <SearchSection :groupName="groupName" />
@@ -21,26 +38,28 @@
           <div v-if="isLoading" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
-          <div v-if="playlistItemList.length == 0">
-            No songs yet. Drag here to start adding.
-          </div>
-          <div>
-            <draggable
-              class="list-group"
-              :list="playlistItemList"
-              :group="groupName"
-              item-key="playlistItemList"
-              @add="insertItem"
-              @end="reorderItem"
-            >
-              <template #item="{ element, index }">
-                <PlaylistItemEditButton
-                  :item="element"
-                  @showToast="showToast"
-                  @remove="removeItemFromPlaylist(index)"
-                />
-              </template>
-            </draggable>
+          <div v-if="!isLoading">
+            <div v-if="playlistItemList.length == 0">
+              No songs yet. Drag here to start adding.
+            </div>
+            <div>
+              <draggable
+                class="list-group"
+                :list="playlistItemList"
+                :group="groupName"
+                item-key="playlistItemList"
+                @add="insertItem"
+                @end="reorderItem"
+              >
+                <template #item="{ element, index }">
+                  <PlaylistItemEditButton
+                    :item="element"
+                    @showToast="showToast"
+                    @remove="removeItemFromPlaylist(index)"
+                  />
+                </template>
+              </draggable>
+            </div>
           </div>
         </div>
       </div>
@@ -78,8 +97,9 @@ import { useRouter } from "vue-router";
 
 import PlaylistItemEditButton from "@/components/PlaylistItemEditButton";
 import draggable from "vuedraggable";
-import SearchSection from "../components/SearchSection.vue";
+import SearchSection from "../components/SearchSection";
 import RefreshButton from "@/components/RefreshButton";
+import BackToPlaylistButton from "@/components/BackToPlaylistButton";
 
 import API from "@/helpers/api";
 import * as bootstrap from "bootstrap";
@@ -92,6 +112,7 @@ export default {
     PlaylistItemEditButton,
     SearchSection,
     RefreshButton,
+    BackToPlaylistButton,
   },
   setup() {
     const store = useStore();
@@ -107,6 +128,7 @@ export default {
     const groupName = "playlist";
 
     const playlistItemList = ref([]);
+    const currentPage = ref(0);
 
     const selectedPlaylist = computed(() => store.state.playlist);
     const accessToken = computed(() => store.state.accessToken);
@@ -114,32 +136,31 @@ export default {
       () => selectedPlaylist.value.tracks.total
     );
     const searchResultList = computed(() => store.state.searchResultList);
+    const playlistTotalPage = computed(() =>
+      Math.ceil(playlistItemLength.value / 10)
+    );
 
     async function initPlaylistItemList() {
-      await getPlaylistItemList();
+      await getPlaylistItemList(0);
     }
 
-    async function getPlaylistItemList() {
+    async function getPlaylistItemList(index) {
+      console.debug("index=", index);
+
       isLoading.value = true;
 
-      let itemList = [];
+      let response = await API.getPlaylistItemList(
+        selectedPlaylist.value.id,
+        index * 10,
+        10,
+        accessToken.value
+      );
 
-      let loopCount = 1;
-      // let loopCount = Math.ceil(playlistItemLength.value / 100);
-
-      for (let i = 0; i < loopCount; i++) {
-        let response = await API.getPlaylistItemList(
-          selectedPlaylist.value.id,
-          i * 100,
-          10,
-          accessToken.value
-        );
-
-        response.data.items.forEach((element) => itemList.push(element));
-      }
+      console.debug("itemList=", response);
 
       let trackList = await track.getTrackListFromPlaylist(
-        itemList,
+        // itemList,
+        response.data.items,
         accessToken.value
       );
 
@@ -182,6 +203,8 @@ export default {
         showToast(response.data.error.message, false);
         return;
       }
+
+      await API.updateSelectedPlaylistDetail(store);
 
       showToast(`Added ${track.name} to ${selectedPlaylist.value.name}.`, true);
     }
@@ -226,8 +249,10 @@ export default {
         autohide: true,
         delay: 1500,
       });
+      await API.updateSelectedPlaylistDetail(store);
       // isLoading.value = true;
-      await getPlaylistItemList();
+      await initPlaylistItemList();
+      console.debug("totalPage=", playlistTotalPage.value);
       // isLoading.value = false;
     });
 
@@ -237,15 +262,18 @@ export default {
       isReorderSuccess: isReorderSuccess,
       isLoading: isLoading,
       groupName: groupName,
+      currentPage: currentPage,
       selectedPlaylist: selectedPlaylist,
       playlistItemList: playlistItemList,
       playlistItemLength: playlistItemLength,
+      playlistTotalPage: playlistTotalPage,
       goToPlaylist: goToPlaylist,
       reorderItem: reorderItem,
       initPlaylistItemList: initPlaylistItemList,
       insertItem: insertItem,
       showToast: showToast,
       removeItemFromPlaylist: removeItemFromPlaylist,
+      getPlaylistItemList: getPlaylistItemList,
     };
   },
 };
