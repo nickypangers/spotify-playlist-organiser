@@ -124,4 +124,24 @@ export default {
 
     return response;
   },
+
+  async getRefreshedAccessToken(refreshToken) {
+    let response = await axios.post(
+      "/getRefreshedAccessToken",
+      qs.stringify({
+        refreshToken: refreshToken,
+      })
+    );
+
+    return response;
+  },
+
+  async getUserDetail(accessToken) {
+    let response = await axios.post(
+      "/getSpotifyUser",
+      qs.stringify({ accessToken: accessToken })
+    );
+
+    return response;
+  },
 };

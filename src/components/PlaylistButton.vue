@@ -77,7 +77,7 @@ export default {
     }
 
     async function unfollowPlaylist() {
-      await checkAccessTokenExpired(store);
+      await checkAccessTokenExpired();
 
       let response = await axios.post(
         "/unfollowPlaylist",

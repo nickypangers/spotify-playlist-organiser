@@ -1,4 +1,6 @@
-// https://accounts.spotify.com/authorize?client_id=9fc05552fff74f828d684944657872de&response_type=code&redirect_uri=http://localhost:8080/verify&scope=user-read-email%20user-read-private%20playlist-modify-public%20playlist-modify-private%20playlist-read-private%20playlist-read-collaborative
+import cookies from "js-cookie";
+import store from "../store";
+
 const client_id = "9fc05552fff74f828d684944657872de";
 
 const redirect_uri = "http://localhost:8080/verify";
@@ -11,8 +13,21 @@ const scope = [
   "playlist-read-collaborative",
 ];
 
-export default function loginUrl() {
+export function loginUrl() {
   return `https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=${scope.join(
     "%20"
   )}`;
+}
+
+export function login(timer) {
+  clearInterval(timer);
+  timer = setInterval(() => {
+    let at = cookies.get("accessToken");
+
+    if (at != null) {
+      clearInterval(timer);
+      store.commit("setAccessToken", at);
+      return;
+    }
+  }, 1000);
 }

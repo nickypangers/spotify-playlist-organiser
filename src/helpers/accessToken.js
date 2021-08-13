@@ -1,23 +1,16 @@
-// import { useStore } from "vuex";
-import axios from "axios";
-import qs from "qs";
 import cookies from "js-cookie";
+import store from "../store";
+import API from "@/helpers/api";
 
-async function checkAccessTokenExpired(store) {
-  // const store = useStore();
-
+export default async function checkAccessTokenExpired() {
   if (
     cookies.get("accessToken") != undefined ||
     cookies.get("refreshToken") == undefined
   ) {
     return;
   }
-  let response = await axios.post(
-    "/getRefreshedAccessToken",
-    qs.stringify({
-      refreshToken: cookies.get("refreshToken"),
-    })
-  );
+
+  let response = await API.getRefreshedAccessToken(cookies.get("refreshToken"));
 
   cookies.set("accessToken", response.data.access_token, {
     expires: response.data.expires_in,
@@ -25,5 +18,3 @@ async function checkAccessTokenExpired(store) {
 
   store.commit("setAccessToken", response.data.access_token);
 }
-
-export default checkAccessTokenExpired;

@@ -30,14 +30,14 @@ import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import checkAccessTokenExpired from "@/helpers/accessToken";
-import LoginButton from "@/components/LoginButton.vue";
-import ProfileButton from "@/components/ProfileButton.vue";
-import LoadingButton from "@/components/LoadingButton.vue";
-import MenuButton from "@/components/MenuButton.vue";
+import LoginButton from "@/components/LoginButton";
+import ProfileButton from "@/components/ProfileButton";
+import LoadingButton from "@/components/LoadingButton";
+import MenuButton from "@/components/MenuButton";
+
 import cookies from "js-cookie";
-import axios from "axios";
-import qs from "qs";
-import loginUrl from "@/helpers/login";
+import { loginUrl } from "@/helpers/login";
+import API from "@/helpers/api";
 
 export default {
   components: {
@@ -90,30 +90,20 @@ export default {
     }
 
     async function getSpotifyUserDetail() {
-      await checkAccessTokenExpired(store);
-      axios
-        .post(
-          "/getSpotifyUser",
-          qs.stringify({ accessToken: accessToken.value }),
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        )
-        .then(function (response) {
-          store.commit("setUser", response.data);
-          isLoading.value = false;
-          isLoggedIn.value = true;
-        })
-        .catch((e) => console.log(e));
+      await checkAccessTokenExpired();
+      let response = await API.getUserDetail(accessToken.value);
+      if (response.data.error.status != 0) {
+        console.log("error getting user detail");
+        console.debug("response=", response.data);
+        return;
+      }
+      store.commit("setUser", response.data);
+      isLoading.value = false;
+      isLoggedIn.value = true;
     }
 
     onMounted(() => {
-      console.log("hi");
-      cookies.remove("accessToken");
       getUser();
-      console.log(loginUrl());
     });
 
     return {

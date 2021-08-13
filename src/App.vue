@@ -4,11 +4,27 @@
 </template>
 
 <script>
+import { onMounted } from "vue";
+import cookies from "js-cookie";
+
 import NavBar from "@/components/NavBar";
+
+import API from "@/helpers/api";
 
 export default {
   components: {
     NavBar,
+  },
+  setup() {
+    onMounted(async () => {
+      cookies.remove("accessToken");
+      if (cookies.get("refreshToken") != undefined) {
+        let response = await API.getRefreshedAccessToken(
+          cookies.get("refreshToken")
+        );
+        console.log(response);
+      }
+    });
   },
 };
 </script>

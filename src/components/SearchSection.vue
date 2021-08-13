@@ -46,6 +46,7 @@
 <script>
 import { ref, computed, watch, onMounted } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 import draggable from "vuedraggable";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
@@ -64,6 +65,7 @@ export default {
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
 
     const isLoading = ref(false);
 
@@ -96,6 +98,15 @@ export default {
       );
 
       console.debug("result=", response.data);
+
+      if (response.data != null) {
+        // if (response.data.error.status == 401) {
+        store.commit("toggleIsLoggedIn", false);
+        router.push({
+          name: "Home",
+        });
+        return;
+      }
 
       let trackList = await track.getTrackListFromSearch(
         response.data.tracks.items,

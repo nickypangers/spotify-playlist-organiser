@@ -163,7 +163,7 @@ export default {
       };
     }
     async function getPlaylist() {
-      await checkAccessTokenExpired(store);
+      await checkAccessTokenExpired();
 
       let response = await API.getSpotifyUserPlaylist(
         user.value.display_name,
@@ -176,7 +176,7 @@ export default {
     async function getPlaylistItemList(offset, limit) {
       isLoading.value = true;
 
-      await checkAccessTokenExpired(store);
+      await checkAccessTokenExpired();
 
       let response = await API.getPlaylistItemList(
         selectedPlaylist.value.id,
