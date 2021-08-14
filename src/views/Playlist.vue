@@ -267,9 +267,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.title {
-  font-size: 2rem;
-  font-weight: bold;
-}
-</style>
+<style lang="scss" scoped></style>

@@ -144,4 +144,13 @@ export default {
 
     return response;
   },
+
+  async unfollowPlaylist(playlistId, accessToken) {
+    let response = await axios.post(
+      "/unfollowPlaylist",
+      qs.stringify({ playlistID: playlistId, accessToken: accessToken })
+    );
+
+    return response;
+  },
 };

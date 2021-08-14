@@ -1,69 +1,48 @@
 <template>
-  <div class="w-100 d-flex justify-content-end">
-    <label for="page">Page</label>
-    <select name="page" id="page" v-model="page" @change="update">
-      <option v-for="(e, i) in totalPages" :key="'page-' + e" :value="i">
-        {{ e }}
-      </option>
-    </select>
-  </div>
+  <nav aria-label="Page">
+    <ul class="pagination pagination-lg">
+      <li
+        class="page-item"
+        :class="{ disabled: page - 1 == currentPage }"
+        v-for="page in totalPages"
+        :key="'page-' + page"
+      >
+        <button class="page-link" @click="currentPage = page - 1">
+          {{ page }}
+        </button>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
-
+import { computed, onMounted } from "vue";
 export default {
   name: "Pagination",
   props: {
     totalPages: Number,
-    currentPage: Number,
+    modelValue: Number,
   },
-  emits: ["update"],
   setup(props, { emit }) {
-    console.log(props);
-
-    const page = ref(0);
-
-    onMounted(() => {
-      page.value = props.currentPage;
+    const currentPage = computed({
+      get() {
+        return props.modelValue;
+      },
+      set(val) {
+        emit("update:modelValue", val);
+      },
     });
 
-    function log(val) {
-      console.log(val);
-    }
-
-    function update() {
-      emit("update", page.value * 10, 10);
-    }
+    onMounted(() => {
+      // console.debug("totalPages=", props.totalPages);
+      // console.debug("currentPage=", currentPage.value);
+    });
 
     return {
-      page,
-      log,
-      update,
+      currentPage: currentPage,
     };
   },
-  // data() {
-  //   return {};
-  // },
-  // computed: {
-  //   page: {
-  //     get: function () {
-  //       return this.currentPage;
-  //     },
-  //     set: function (val) {
-  //       this.currentPage = val;
-  //     },
-  //   },
-  // },
-  // methods: {
-  //   log(val) {
-  //     console.log(val);
-  //   },
-  //   update() {
-  //     this.$emit("update", this.currentPage * 10, 10);
-  //   },
-  // },
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped></style>

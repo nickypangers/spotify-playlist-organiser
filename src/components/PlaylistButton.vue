@@ -44,8 +44,7 @@ import { useStore } from "vuex";
 import checkAccessTokenExpired from "@/helpers/accessToken";
 import CollaborativeLabel from "@/components/CollaborativeLabel";
 import PublicStatusLabel from "@/components/PublicStatusLabel";
-import qs from "qs";
-import axios from "axios";
+import API from "@/helpers/api";
 export default {
   name: "PlaylistButton",
   props: { playlist: Object, isSelected: Boolean },
@@ -79,15 +78,9 @@ export default {
     async function unfollowPlaylist() {
       await checkAccessTokenExpired();
 
-      let response = await axios.post(
-        "/unfollowPlaylist",
-        qs.stringify({
-          playlistID: props.playlist.id,
-          accessToken: accessToken.value,
-        }),
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        }
+      let response = await API.unfollowPlaylist(
+        props.playlist.id,
+        accessToken.value
       );
 
       if (response.data.success) {
@@ -108,9 +101,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .playlist-button {
-  border-radius: 20px;
+  border-radius: 0.25rem;
 }
 
 .playlist-inner-button {
@@ -122,8 +115,9 @@ export default {
   align-items: center;
 }
 .selected {
-  background: turquoise;
+  background: $blue;
   transition: all 0.3s ease-in-out;
+  color: $white;
 }
 
 .dropdown-item {

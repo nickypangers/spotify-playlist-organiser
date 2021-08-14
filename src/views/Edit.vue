@@ -5,31 +5,11 @@
         <div
           class="col-12 d-flex justify-content-between align-items-center mb-4"
         >
-          <div>
-            <!-- <button type="button" class="btn" @click="goToPlaylist()">
-              <BIconArrowLeftCircleFill />
-            </button> -->
-            <BackToPlaylistButton @click="goToPlaylist()" />
-          </div>
-          <div>
-            <RefreshButton @click="initPlaylistItemList" />
-          </div>
+          <BackToPlaylistButton @click="goToPlaylist()" />
+          <RefreshButton @click="initPlaylistItemList" />
         </div>
-        <div class="col-12 mb-2 d-flex justify-content-end" v-if="!isLoading">
-          <select
-            name="page"
-            id="page"
-            v-model="currentPage"
-            @change="getPlaylistItemList(currentPage)"
-          >
-            <option
-              :value="index"
-              v-for="(page, index) in playlistTotalPage"
-              :key="'page-' + page"
-            >
-              Page {{ page }}
-            </option>
-          </select>
+        <div class="col-12 text-start">
+          <span class="title">Edit {{ selectedPlaylist.name }}</span>
         </div>
         <div class="col-lg-6 col-12">
           <SearchSection :groupName="groupName" />
@@ -60,6 +40,7 @@
                 </template>
               </draggable>
             </div>
+            <Pagination :totalPages="playlistTotalPage" v-model="currentPage" />
           </div>
         </div>
       </div>
@@ -91,7 +72,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -100,6 +81,7 @@ import draggable from "vuedraggable";
 import SearchSection from "../components/SearchSection";
 import RefreshButton from "@/components/RefreshButton";
 import BackToPlaylistButton from "@/components/BackToPlaylistButton";
+import Pagination from "@/components/Pagination";
 
 import API from "@/helpers/api";
 import * as bootstrap from "bootstrap";
@@ -113,6 +95,7 @@ export default {
     SearchSection,
     RefreshButton,
     BackToPlaylistButton,
+    Pagination,
   },
   setup() {
     const store = useStore();
@@ -140,6 +123,10 @@ export default {
       Math.ceil(playlistItemLength.value / 10)
     );
 
+    watch(currentPage, (newVal) => {
+      getPlaylistItemList(newVal);
+    });
+
     async function initPlaylistItemList() {
       await getPlaylistItemList(0);
     }
@@ -163,8 +150,6 @@ export default {
         response.data.items,
         accessToken.value
       );
-
-      // console.log(trackList);
 
       playlistItemList.value = trackList;
 
@@ -240,9 +225,9 @@ export default {
       showToast("Successfully reordered.", true);
     }
 
-    function removeItemFromPlaylist(index) {
+    const removeItemFromPlaylist = (index) => {
       playlistItemList.value.splice(index, 1);
-    }
+    };
 
     onMounted(async () => {
       toastEl = new bootstrap.Toast(toast.value, {
@@ -272,8 +257,8 @@ export default {
       initPlaylistItemList: initPlaylistItemList,
       insertItem: insertItem,
       showToast: showToast,
-      removeItemFromPlaylist: removeItemFromPlaylist,
       getPlaylistItemList: getPlaylistItemList,
+      removeItemFromPlaylist: removeItemFromPlaylist,
     };
   },
 };

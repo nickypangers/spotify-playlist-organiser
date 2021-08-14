@@ -99,7 +99,7 @@ export default {
 
       console.debug("result=", response.data);
 
-      if (response.data != null) {
+      if (response.data.error.status != 0) {
         // if (response.data.error.status == 401) {
         store.commit("toggleIsLoggedIn", false);
         router.push({
