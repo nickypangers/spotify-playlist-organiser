@@ -3,10 +3,11 @@
     <ul class="pagination pagination-lg">
       <li
         class="page-item"
-        :class="{ disabled: page - 1 == currentPage }"
+        :class="{ disabled: currentPage == page }"
         v-for="page in totalPages"
         :key="'page-' + page"
       >
+        <!-- <button class="page-link" @click="updateCurrentPage(page - 1)"> -->
         <button class="page-link" @click="currentPage = page - 1">
           {{ page }}
         </button>
@@ -33,13 +34,18 @@ export default {
       },
     });
 
-    onMounted(() => {
-      // console.debug("totalPages=", props.totalPages);
-      // console.debug("currentPage=", currentPage.value);
-    });
+    const updateCurrentPage = (val) => {
+      console.debug("modelvalue=", props.modelValue);
+      console.debug("totalpages=", props.totalPages);
+      // currentPage.value = val;
+      emit("update:modelValue", val);
+    };
+
+    onMounted(() => {});
 
     return {
       currentPage: currentPage,
+      updateCurrentPage: updateCurrentPage,
     };
   },
 };

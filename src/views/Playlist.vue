@@ -57,6 +57,12 @@
               </div>
               <div v-else>No Songs</div>
             </div>
+            <Pagination
+              class="mt-3"
+              :totalPages="selectedPlaylistTotalPages"
+              v-model="setSelectedPlaylistCurrentPage"
+              v-if="selectedPlaylistTotalPages > 0"
+            />
           </div>
         </div>
         <div v-else>No playlist</div>
@@ -99,27 +105,26 @@ import PlaylistButton from "@/components/PlaylistButton";
 import PlaylistItemButton from "@/components/PlaylistItemButton";
 import CreatePlaylistModal from "@/components/CreatePlaylistModal";
 import RefreshButton from "@/components/RefreshButton";
+import Pagination from "@/components/Pagination";
 
 export default {
   name: "Playlist",
   components: {
-    // draggable,
     PlaylistButton,
     PlaylistItemButton,
     CreatePlaylistModal,
     RefreshButton,
+    Pagination,
   },
   setup() {
     const store = useStore();
 
     const playlistList = ref([]);
     const selectedIndex = ref(0);
-    const selectedPlaylistItemList = ref({
-      total: 0,
-    });
+    const selectedPlaylistItemList = ref([]);
     const isLoading = ref(false);
     const selectedPlaylistItemIndex = ref(0);
-    const selectedPlaylistCurrentPage = ref(1);
+    const selectedPlaylistCurrentPage = ref(0);
 
     const user = computed(() => {
       return store.state.user;
@@ -131,10 +136,7 @@ export default {
       return playlistList.value[selectedIndex.value];
     });
     const selectedPlaylistTotalPages = computed(() => {
-      let totalPage = Math.ceil(selectedPlaylistItemList.value.total / 10);
-      if (totalPage == 0) {
-        return 1;
-      }
+      let totalPage = Math.ceil(selectedPlaylistItemList.value.length / 10);
       return totalPage;
     });
     const offset = computed(() => {
