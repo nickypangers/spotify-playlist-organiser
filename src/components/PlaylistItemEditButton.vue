@@ -36,13 +36,12 @@ export default {
     const hover = ref(false);
 
     const selectedPlaylist = computed(() => store.state.playlist);
-    const accessToken = computed(() => store.state.accessToken);
+    // const accessToken = computed(() => store.state.accessToken);
 
     async function removeItemFromPlaylist() {
       let response = await API.removeItemFromPlaylist(
         selectedPlaylist.value.id,
-        props.item.uri,
-        accessToken.value
+        props.item.uri
       );
 
       console.log(response.data);
@@ -52,7 +51,7 @@ export default {
         return;
       }
 
-      await API.updateSelectedPlaylistDetail(store);
+      await API.updateSelectedPlaylistDetail();
 
       emit("showToast", `Successfully deleted ${props.item.name}`, true);
 

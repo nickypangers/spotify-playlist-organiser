@@ -91,7 +91,7 @@ export default {
 
     async function getSpotifyUserDetail() {
       await checkAccessTokenExpired();
-      let response = await API.getUserDetail(accessToken.value);
+      let response = await API.getUserDetail();
       if (response.data.error.status != 0) {
         console.log("error getting user detail");
         console.debug("response=", response.data);

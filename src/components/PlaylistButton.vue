@@ -78,10 +78,7 @@ export default {
     async function unfollowPlaylist() {
       await checkAccessTokenExpired();
 
-      let response = await API.unfollowPlaylist(
-        props.playlist.id,
-        accessToken.value
-      );
+      let response = await API.unfollowPlaylist(props.playlist.id);
 
       if (response.data.success) {
         emit("success");

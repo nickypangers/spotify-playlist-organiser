@@ -139,8 +139,7 @@ export default {
       let response = await API.getPlaylistItemList(
         selectedPlaylist.value.id,
         index * 10,
-        10,
-        accessToken.value
+        10
       );
 
       console.debug("itemList=", response);
@@ -180,8 +179,7 @@ export default {
       let response = await API.addItemsToPlaylist(
         selectedPlaylist.value.id,
         event.newIndex,
-        track.uri,
-        accessToken.value
+        track.uri
       );
 
       if (response.data.error.status != 0) {
@@ -189,7 +187,7 @@ export default {
         return;
       }
 
-      await API.updateSelectedPlaylistDetail(store);
+      await API.updateSelectedPlaylistDetail();
 
       showToast(`Added ${track.name} to ${selectedPlaylist.value.name}.`, true);
     }
@@ -212,8 +210,7 @@ export default {
         event.oldIndex,
         insertBefore,
         1,
-        selectedPlaylist.value.snapshot_id,
-        accessToken.value
+        selectedPlaylist.value.snapshot_id
       );
 
       if (response.data.error.status != 0) {
@@ -234,7 +231,7 @@ export default {
         autohide: true,
         delay: 1500,
       });
-      await API.updateSelectedPlaylistDetail(store);
+      await API.updateSelectedPlaylistDetail();
       // isLoading.value = true;
       await initPlaylistItemList();
       console.debug("totalPage=", playlistTotalPage.value);

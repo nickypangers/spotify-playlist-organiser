@@ -26,7 +26,7 @@
           >
             Create New Playlist
           </button>
-          <RefreshButton @click="getPlaylistItemList(0, 10)" class="ms-2" />
+          <RefreshButton @click="reloadSelectedPlaylist" class="ms-2" />
         </div>
       </div>
 
@@ -56,37 +56,17 @@
                 />
               </div>
               <div v-else>No Songs</div>
+              <Pagination
+                class="mt-3"
+                :totalPages="selectedPlaylistTotalPages"
+                v-model="selectedPlaylistCurrentPage"
+                v-if="selectedPlaylistTotalPages > 0"
+              />
             </div>
-            <Pagination
-              class="mt-3"
-              :totalPages="selectedPlaylistTotalPages"
-              v-model="selectedPlaylistCurrentPage"
-              v-if="selectedPlaylistTotalPages > 0"
-            />
           </div>
         </div>
         <div v-else>No playlist</div>
       </div>
-
-      <!-- <div class="col-12">
-        <div class="w-100 d-flex justify-content-end">
-          <label for="page">Page</label>
-          <select
-            name="page"
-            id="page"
-            v-model="selectedPlaylistCurrentPage"
-            @change="getPlaylistItemList(offset, 10)"
-          >
-            <option
-              v-for="(e, i) in selectedPlaylistTotalPages"
-              :key="'page-' + e"
-              :value="i"
-            >
-              {{ e }}
-            </option>
-          </select>
-        </div>
-      </div> -->
     </div>
   </div>
 
@@ -136,7 +116,7 @@ export default {
       return playlistList.value[selectedIndex.value];
     });
     const selectedPlaylistTotalPages = computed(() => {
-      let totalPage = Math.ceil(selectedPlaylistItemList.value.length / 10);
+      let totalPage = Math.ceil(selectedPlaylist.value.tracks.total / 10);
       return totalPage;
     });
     const offset = computed(() => {
@@ -159,18 +139,17 @@ export default {
     function setSelectedIndex(val) {
       selectedIndex.value = val;
     }
+
     function isActive(val) {
       return {
         active: selectedIndex.value == val,
       };
     }
+
     async function getPlaylist() {
       await checkAccessTokenExpired();
 
-      let response = await API.getSpotifyUserPlaylist(
-        user.value.display_name,
-        accessToken.value
-      );
+      let response = await API.getSpotifyUserPlaylist(user.value.display_name);
 
       playlistList.value = response.data.items;
     }
@@ -183,16 +162,15 @@ export default {
       let response = await API.getPlaylistItemList(
         selectedPlaylist.value.id,
         offset,
-        limit,
-        accessToken.value
+        limit
       );
 
-      let trackList = await track.getTrackListFromPlaylist(
-        response.data.items,
-        accessToken.value
-      );
+      let trackList = await track.getTrackListFromPlaylist(response.data.items);
 
       selectedPlaylistItemList.value = trackList;
+
+      let currentPage = Math.floor(offset / 10);
+      setSelectedPlaylistCurrentPage(currentPage);
 
       isLoading.value = false;
     }
@@ -230,6 +208,31 @@ export default {
       selectedPlaylistCurrentPage.value = val;
     }
 
+    async function getCurrentPlaylistDetail() {
+      let response = await API.getSpotifyPlaylistDetail(
+        selectedPlaylist.value.id
+      );
+      // console.debug("current playlist detail=", response.data);
+      return response.data;
+    }
+
+    async function reloadSelectedPlaylist() {
+      isLoading.value = true;
+
+      let playlistDetail = await getCurrentPlaylistDetail();
+
+      if (playlistDetail.error.status != 0) {
+        console.debug("playlist detail", playlistDetail.error);
+        return;
+      }
+
+      playlistList.value[selectedIndex.value] = playlistDetail;
+
+      store.commit("setPlaylist", playlistDetail);
+
+      await getPlaylistItemList(0, 10);
+    }
+
     watch(selectedIndex, async (newVal, oldVal) => {
       if (newVal != oldVal) {
         isLoading.value = true;
@@ -238,8 +241,13 @@ export default {
       }
     });
 
+    watch(selectedPlaylistCurrentPage, async (newVal) => {
+      await getPlaylistItemList(newVal * offset.value, 10);
+    });
+
     onMounted(async () => {
       await initPlaylist();
+      await getCurrentPlaylistDetail();
     });
 
     return {
@@ -264,6 +272,7 @@ export default {
       displayTrackArtist: displayTrackArtist,
       initPlaylist: initPlaylist,
       setSelectedPlaylistCurrentPage: setSelectedPlaylistCurrentPage,
+      reloadSelectedPlaylist: reloadSelectedPlaylist,
     };
   },
 };

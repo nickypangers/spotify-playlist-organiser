@@ -93,8 +93,7 @@ export default {
 
       let response = await API.searchQuery(
         query,
-        "artist,track",
-        accessToken.value
+        "artist,track"
       );
 
       console.debug("result=", response.data);
