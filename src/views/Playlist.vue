@@ -60,7 +60,7 @@
             <Pagination
               class="mt-3"
               :totalPages="selectedPlaylistTotalPages"
-              v-model="setSelectedPlaylistCurrentPage"
+              v-model="selectedPlaylistCurrentPage"
               v-if="selectedPlaylistTotalPages > 0"
             />
           </div>

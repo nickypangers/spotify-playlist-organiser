@@ -3,7 +3,7 @@
     <ul class="pagination pagination-lg">
       <li
         class="page-item"
-        :class="{ disabled: currentPage == page }"
+        :class="{ disabled: currentPage + 1 == page }"
         v-for="page in totalPages"
         :key="'page-' + page"
       >
@@ -35,13 +35,17 @@ export default {
     });
 
     const updateCurrentPage = (val) => {
-      console.debug("modelvalue=", props.modelValue);
+      emit("update:modelValue", val);
+
+      console.debug("modelvalue=", currentPage.value);
       console.debug("totalpages=", props.totalPages);
       // currentPage.value = val;
-      emit("update:modelValue", val);
     };
 
-    onMounted(() => {});
+    onMounted(() => {
+      console.debug("modelvalue=", currentPage.value);
+      console.debug("totalpages=", props.totalPages);
+    });
 
     return {
       currentPage: currentPage,
