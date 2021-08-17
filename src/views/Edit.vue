@@ -46,29 +46,7 @@
       </div>
     </div>
   </div>
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div
-      ref="toast"
-      class="toast align-items-center text-white border-0"
-      :class="{
-        'bg-toast-error': !isReorderSuccess,
-        'bg-toast-success': isReorderSuccess,
-      }"
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-    >
-      <div class="d-flex">
-        <div class="toast-body">{{ toastMessage }}</div>
-        <button
-          type="button"
-          class="btn-close btn-close-white me-2 m-auto"
-          data-bs-dismiss="toast"
-          aria-label="Close"
-        ></button>
-      </div>
-    </div>
-  </div>
+  <Toast :message="toastMessage" :isSuccess="isReorderSuccess" />
 </template>
 
 <script>
@@ -82,9 +60,9 @@ import SearchSection from "../components/SearchSection";
 import RefreshButton from "@/components/RefreshButton";
 import BackToPlaylistButton from "@/components/BackToPlaylistButton";
 import Pagination from "@/components/Pagination";
+import Toast from "@/components/Toast";
 
 import API from "@/helpers/api";
-import * as bootstrap from "bootstrap";
 import track from "@/helpers/getTrackList";
 
 export default {
@@ -96,13 +74,13 @@ export default {
     RefreshButton,
     BackToPlaylistButton,
     Pagination,
+    Toast,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
 
-    const toast = ref(null);
-    var toastEl = null;
+    const toastEl = computed(() => store.state.toastEl);
     const toastMessage = ref("");
     const isReorderSuccess = ref(false);
 
@@ -165,7 +143,7 @@ export default {
       console.log(msg);
       toastMessage.value = msg;
       isReorderSuccess.value = state;
-      toastEl.show();
+      toastEl.value.show();
     }
 
     async function insertItem(event) {
@@ -227,10 +205,6 @@ export default {
     };
 
     onMounted(async () => {
-      toastEl = new bootstrap.Toast(toast.value, {
-        autohide: true,
-        delay: 1500,
-      });
       await API.updateSelectedPlaylistDetail();
       // isLoading.value = true;
       await initPlaylistItemList();
@@ -239,7 +213,6 @@ export default {
     });
 
     return {
-      toast: toast,
       toastMessage: toastMessage,
       isReorderSuccess: isReorderSuccess,
       isLoading: isLoading,

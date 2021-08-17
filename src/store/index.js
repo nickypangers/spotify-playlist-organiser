@@ -7,7 +7,7 @@ export default createStore({
     accessToken: null,
     playlist: null,
     searchResultList: [],
-    reconnectModal: null,
+    toastEl: null,
   },
   mutations: {
     toggleIsLoggedIn(state, val) {
@@ -25,8 +25,8 @@ export default createStore({
     setSearchResultList(state, val) {
       state.searchResultList = val;
     },
-    setReconnectModal(state, val) {
-      state.reconnectModal = val;
+    setToastEl(state, val) {
+      state.toastEl = val;
     },
   },
   actions: {},

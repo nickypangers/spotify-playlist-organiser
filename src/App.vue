@@ -1,17 +1,14 @@
 <template>
   <NavBar />
   <router-view />
-  <ReconnectModal />
 </template>
 
 <script>
 import NavBar from "@/components/NavBar";
-import ReconnectModal from "@/components/ReconnectModal";
 
 export default {
   components: {
     NavBar,
-    ReconnectModal,
   },
 };
 </script>

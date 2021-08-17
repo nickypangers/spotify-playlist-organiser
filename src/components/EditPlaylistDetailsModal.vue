@@ -21,6 +21,9 @@
             aria-label="Close"
           ></button>
         </div>
+        <div class="modal-body">
+          {{ playlist }}
+        </div>
       </div>
     </div>
   </div>

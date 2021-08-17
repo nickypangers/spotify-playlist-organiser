@@ -168,4 +168,16 @@ export default {
 
     return response;
   },
+
+  async changePlaylistDetail(playlistId, playlistDetail) {
+    let response = await axios.post(
+      "changePlaylistDetail",
+      qs.stringify({
+        playlistId: playlistId,
+        playlistDetail: playlistDetail,
+        accessToken: store.state.accessToken,
+      })
+    );
+    return response;
+  },
 };

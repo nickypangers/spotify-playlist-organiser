@@ -20,7 +20,13 @@
           <BIconList />
         </button>
         <ul class="dropdown-menu">
-          <li class="dropdown-item">Edit Playlist Details</li>
+          <li
+            class="dropdown-item"
+            data-bs-toggle="modal"
+            data-bs-target="#editPlaylistDetailsModal"
+          >
+            Edit Playlist Details
+          </li>
           <li class="dropdown-item">Another action</li>
           <li class="dropdown-item" @click="unfollowPlaylist">
             Unfollow Playlist
@@ -31,9 +37,25 @@
         ><button class="btn" @click="log('test')">
           <BIconPencilFill /></button
       ></router-link>
-      <button class="btn" @click="goTo(playlist.uri)">
-        <BIconBoxArrowRight />
-      </button>
+      <div class="btn-group">
+        <button
+          type="button"
+          class="btn dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <BIconLink45deg />
+        </button>
+        <ul class="dropdown-menu">
+          <li
+            class="dropdown-item"
+            @click="goTo(playlist.external_urls.spotify)"
+          >
+            Open on browser
+          </li>
+          <li class="dropdown-item" @click="goTo(playlist.uri)">Open on app</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
