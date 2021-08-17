@@ -10,10 +10,11 @@
         placeholder="Search Here..."
       />
       <button
+      class="btn btn-primary ms-2"
         :class="{ 'd-block': query, 'd-none': !query }"
         @click="query = ''"
       >
-        <BIconXSquareFill />
+       Clear
       </button>
     </div>
     <div class="mt-3">

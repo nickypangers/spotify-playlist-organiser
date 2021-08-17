@@ -3,12 +3,12 @@
     <div class="mt-3">
       <div class="row">
         <div
-          class="col-12 d-flex justify-content-between align-items-center mb-4"
+          class="col-12 d-flex justify-content-between align-items-center mb-3"
         >
           <BackToPlaylistButton @click="goToPlaylist()" />
           <RefreshButton @click="initPlaylistItemList" />
         </div>
-        <div class="col-12 text-start">
+        <div class="col-12 text-start mb-2">
           <span class="title">Edit {{ selectedPlaylist.name }}</span>
         </div>
         <div class="col-lg-6 col-12">

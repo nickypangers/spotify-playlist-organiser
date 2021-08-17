@@ -3,7 +3,7 @@
     <div class="container">
       <div class="col-12">
         <div class="alert-warning w-100 py-2">
-          Deleting a playlist simply means unfollowing it. Please see
+          Delete a playlist by unfollowing it. Please see
           <a
             href="https://developer.spotify.com/documentation/general/guides/working-with-playlists/#following-and-unfollowing-a-playlist"
             target="_blank"

@@ -92,11 +92,11 @@ export default {
     async function getSpotifyUserDetail() {
       await checkAccessTokenExpired();
       let response = await API.getUserDetail();
-      if (response.data.error.status != 0) {
-        console.log("error getting user detail");
-        console.debug("response=", response.data);
-        return;
-      }
+      // if (response.data.error.status != 0) {
+      //   console.log("error getting user detail");
+      //   console.debug("response=", response.data);
+      //   return;
+      // }
       store.commit("setUser", response.data);
       isLoading.value = false;
       isLoggedIn.value = true;
