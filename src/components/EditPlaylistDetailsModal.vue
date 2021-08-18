@@ -23,6 +23,89 @@
         </div>
         <div class="modal-body">
           {{ playlist }}
+          <div class="container">
+            <div class="alert alert-danger" role="alert">Testing</div>
+            <div class="d-flex align-items center">
+              <label for="editName">Playlist Name: </label>
+              &nbsp;
+              <input
+                type="text"
+                name="editName"
+                id="editName"
+                v-model="playlistName"
+              />
+            </div>
+            <div class="d-flex mt-3">
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="editPublic"
+                  v-model="isPublic"
+                  :value="true"
+                  :disabled="isCollaborative"
+                />
+                <label for="editPublic" class="me-3">Public</label>
+              </div>
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="editPrivate"
+                  v-model="isPublic"
+                  :value="false"
+                />
+                <label for="editPrivate">Private</label>
+              </div>
+            </div>
+            <div class="d-flex mt-3">
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="editEnableCollaborative"
+                  v-model="isCollaborative"
+                  :value="true"
+                  :disabled="isPublic"
+                />
+                <label for="editEnableCollaborative" class="me-3"
+                  >Enable Collaborative</label
+                >
+              </div>
+              <div class="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="editDisableCollaborative"
+                  v-model="isCollaborative"
+                  :value="false"
+                />
+                <label for="editDisableCollaborative"
+                  >Disable Collaborative</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+            Close
+          </button>
+          <button type="button" class="btn btn-primary">
+            {{ isLoading ? "Loading..." : "Edit Playlist" }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            id="close"
+            ref="close"
+            hidden
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -30,10 +113,30 @@
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+
 export default {
   name: "EditPlaylistDetailsModal",
   props: { playlist: Object },
+  setup() {
+    const close = ref(null);
+    const isLoading = ref(false);
+    const isPublic = ref(false);
+    const isCollaborative = ref(false);
+
+    const playlistName = ref("");
+
+    onMounted(() => {});
+
+    return {
+      close: close,
+      isLoading: isLoading,
+      isPublic: isPublic,
+      isCollaborative: isCollaborative,
+      playlistName: playlistName,
+    };
+  },
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped></style>

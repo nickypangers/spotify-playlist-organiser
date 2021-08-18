@@ -44,7 +44,7 @@
                   v-model="isPublic"
                   :disabled="isCollaborative"
                 />
-                <label for="public" class="mr-3">Public</label>
+                <label for="public" class="me-3">Public</label>
               </div>
               <div class="d-flex align-items-center">
                 <input
@@ -60,23 +60,23 @@
               <div class="d-flex align-items-center">
                 <input
                   type="radio"
-                  id="collaborative"
+                  id="enableCollaborative"
                   :value="true"
                   v-model="isCollaborative"
                   :disabled="isPublic"
                 />
-                <label for="collaborative" class="mr-3"
+                <label for="enableCollaborative" class="mr-3"
                   >Enable collaborative</label
                 >
               </div>
               <div class="d-flex align-items-center">
                 <input
                   type="radio"
-                  id="private"
+                  id="disableCollaborative"
                   :value="false"
                   v-model="isCollaborative"
                 />
-                <label for="collaborative">Disable collaborative</label>
+                <label for="disableCollaborative">Disable collaborative</label>
               </div>
             </div>
           </div>
