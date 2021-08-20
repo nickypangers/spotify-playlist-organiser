@@ -26,18 +26,15 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import checkAccessTokenExpired from "@/helpers/accessToken";
 import LoginButton from "@/components/LoginButton";
 import ProfileButton from "@/components/ProfileButton";
 import LoadingButton from "@/components/LoadingButton";
 import MenuButton from "@/components/MenuButton";
 
-import cookies from "js-cookie";
 import { loginUrl } from "@/helpers/login";
-import API from "@/helpers/api";
 
 export default {
   components: {
@@ -48,10 +45,16 @@ export default {
   },
   setup() {
     const store = useStore();
-
     const route = useRoute();
 
-    const isLoading = ref(false);
+    const isLoading = computed({
+      get() {
+        return store.state.isLoading;
+      },
+      set(val) {
+        store.commit("toggleIsLoading", val);
+      },
+    });
     const accessToken = computed(() => store.state.accessToken);
     const hasAccessToken = computed(() => accessToken.value == null);
     const isLoggedIn = computed({
@@ -73,39 +76,6 @@ export default {
       isLoading.value = true;
     }
 
-    let timer;
-
-    function getUser() {
-      clearInterval(timer);
-      timer = setInterval(function () {
-        let at = cookies.get("accessToken");
-
-        if (at != null) {
-          clearInterval(timer);
-          store.commit("setAccessToken", at);
-          getSpotifyUserDetail();
-          return;
-        }
-      }, 1000);
-    }
-
-    async function getSpotifyUserDetail() {
-      await checkAccessTokenExpired();
-      let response = await API.getUserDetail();
-      // if (response.data.error.status != 0) {
-      //   console.log("error getting user detail");
-      //   console.debug("response=", response.data);
-      //   return;
-      // }
-      store.commit("setUser", response.data);
-      isLoading.value = false;
-      isLoggedIn.value = true;
-    }
-
-    onMounted(() => {
-      getUser();
-    });
-
     return {
       route: route,
       isLoading: isLoading,
@@ -113,8 +83,6 @@ export default {
       hasAccessToken: hasAccessToken,
       isLoggedIn: isLoggedIn,
       login: login,
-      getUser: getUser,
-      getSpotifyUserDetail: getSpotifyUserDetail,
     };
   },
 };

@@ -8,6 +8,8 @@ export default createStore({
     playlist: null,
     searchResultList: [],
     toastEl: null,
+    editPlaylistModalEl: null,
+    isLoading: false,
   },
   mutations: {
     toggleIsLoggedIn(state, val) {
@@ -27,6 +29,12 @@ export default createStore({
     },
     setToastEl(state, val) {
       state.toastEl = val;
+    },
+    setEditPlaylistModalEl(state, val) {
+      state.editPlaylistModalEl = val;
+    },
+    toggleIsLoading(state, val) {
+      state.isLoading = val;
     },
   },
   actions: {},

@@ -24,7 +24,13 @@
         <div class="modal-body">
           {{ playlist }}
           <div class="container">
-            <div class="alert alert-danger" role="alert">Testing</div>
+            <div
+              class="alert alert-danger"
+              role="alert"
+              v-show="errorMessage.length > 0"
+            >
+              {errorMessage}
+            </div>
             <div class="d-flex align-items center">
               <label for="editName">Playlist Name: </label>
               &nbsp;
@@ -32,7 +38,7 @@
                 type="text"
                 name="editName"
                 id="editName"
-                v-model="playlistName"
+                v-model="tempPlaylist.name"
               />
             </div>
             <div class="d-flex mt-3">
@@ -118,22 +124,27 @@ import { ref, onMounted } from "vue";
 export default {
   name: "EditPlaylistDetailsModal",
   props: { playlist: Object },
-  setup() {
+  setup(props) {
     const close = ref(null);
     const isLoading = ref(false);
     const isPublic = ref(false);
     const isCollaborative = ref(false);
+    const errorMessage = ref("");
 
-    const playlistName = ref("");
+    const tempPlaylist = ref({});
 
-    onMounted(() => {});
+    onMounted(() => {
+      tempPlaylist.value = props.playlist;
+      console.debug("tempPlaylist=", tempPlaylist.value);
+    });
 
     return {
       close: close,
       isLoading: isLoading,
       isPublic: isPublic,
       isCollaborative: isCollaborative,
-      playlistName: playlistName,
+      errorMessage: errorMessage,
+      tempPlaylist: tempPlaylist,
     };
   },
 };

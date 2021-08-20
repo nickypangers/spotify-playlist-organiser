@@ -71,7 +71,10 @@
   </div>
 
   <CreatePlaylistModal @success="initPlaylist" />
-  <EditPlaylistDetailsModal :playlist="selectedPlaylist" />
+  <EditPlaylistDetailsModal
+    :playlist="selectedPlaylist"
+    v-show="selectedPlaylist != null"
+  />
 </template>
 
 <script>
