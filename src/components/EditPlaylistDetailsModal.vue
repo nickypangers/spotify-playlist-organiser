@@ -1,7 +1,7 @@
 <template>
   <div
     class="modal fade"
-    id="editPlaylistDetailsModal"
+    :id="id"
     data-bs-backdrop="static"
     data-bs-keyboard="false"
     tabindex="-1"
@@ -11,9 +11,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editPlaylistDetailsLabel">
-            Edit Playlist Details
-          </h5>
+          <h5 class="modal-title" :id="id + 'Label'">Edit Playlist Details</h5>
           <button
             type="button"
             class="btn-close"
@@ -98,7 +96,7 @@
           >
             Close
           </button>
-          <button type="button" class="btn btn-primary">
+          <button type="button" class="btn btn-primary" @click="editPlaylist">
             {{ isLoading ? "Loading..." : "Edit Playlist" }}
           </button>
           <button
@@ -121,10 +119,13 @@
 <script>
 import { ref, onMounted } from "vue";
 
+import API from "@/helpers/api";
+
 export default {
   name: "EditPlaylistDetailsModal",
-  props: { playlist: Object },
-  setup(props) {
+  props: { id: String, playlist: Object },
+  emits: ["reloadPlaylist"],
+  setup(props, { emit }) {
     const close = ref(null);
     const isLoading = ref(false);
     const isPublic = ref(false);
@@ -132,6 +133,23 @@ export default {
     const errorMessage = ref("");
 
     const tempPlaylist = ref({});
+
+    const reloadPlaylist = () => {
+      emit("reloadPlaylist");
+    };
+
+    const editPlaylist = async () => {
+      let playlistDetail = {
+        name: tempPlaylist.value.name,
+        public: isPublic.value,
+        collaborative: isCollaborative.value,
+      };
+      let response = await API.changePlaylistDetail(
+        props.playlist.id,
+        playlistDetail
+      );
+      console.debug("editPlaylist=", response.data);
+    };
 
     onMounted(() => {
       tempPlaylist.value = props.playlist;
@@ -145,6 +163,8 @@ export default {
       isCollaborative: isCollaborative,
       errorMessage: errorMessage,
       tempPlaylist: tempPlaylist,
+      editPlaylist: editPlaylist,
+      reloadPlaylist: reloadPlaylist,
     };
   },
 };

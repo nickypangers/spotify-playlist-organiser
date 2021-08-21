@@ -1,62 +1,67 @@
 <template>
-  <div :class="{ selected: isSelected }" class="playlist-button py-2">
-    <div class="playlist-inner-button py-2 m-0">
-      <div class="d-flex align-items-center">
-        <p class="m-0">{{ playlist.name }}</p>
-        <PublicStatusLabel class="ms-2" :isPublic="playlist.public" />
-        <CollaborativeLabel class="ms-2" v-if="playlist.collaborative" />
+  <div>
+    <div :class="{ selected: isSelected }" class="playlist-button py-2">
+      <div class="playlist-inner-button py-2 m-0">
+        <div class="d-flex align-items-center">
+          <p class="m-0">{{ playlist.name }}</p>
+          <PublicStatusLabel class="ms-2" :isPublic="playlist.public" />
+          <CollaborativeLabel class="ms-2" v-if="playlist.collaborative" />
+        </div>
+        {{ displayTotalSongs }}
       </div>
-      {{ displayTotalSongs }}
-    </div>
-    <hr v-if="isSelected" />
-    <div class="w-100 d-flex justify-content-around" v-if="isSelected">
-      <div class="btn-group">
-        <button
-          type="button"
-          class="btn dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <BIconList />
-        </button>
-        <ul class="dropdown-menu">
-          <li
-            class="dropdown-item"
-            data-bs-toggle="modal"
-            data-bs-target="#editPlaylistDetailsModal"
+      <hr v-if="isSelected" />
+      <div class="w-100 d-flex justify-content-around" v-if="isSelected">
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            Edit Playlist Details
-          </li>
-          <li class="dropdown-item">Another action</li>
-          <li class="dropdown-item" @click="unfollowPlaylist">
-            Unfollow Playlist
-          </li>
-        </ul>
-      </div>
-      <router-link to="/edit"
-        ><button class="btn" @click="log('test')">
-          <BIconPencilFill /></button
-      ></router-link>
-      <div class="btn-group">
-        <button
-          type="button"
-          class="btn dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <BIconLink45deg />
-        </button>
-        <ul class="dropdown-menu">
-          <li
-            class="dropdown-item"
-            @click="goTo(playlist.external_urls.spotify)"
+            <BIconList />
+          </button>
+          <ul class="dropdown-menu">
+            <li
+              class="dropdown-item"
+              data-bs-toggle="modal"
+              :data-bs-target="'#' + modalId"
+            >
+              Edit Playlist Details
+            </li>
+            <li class="dropdown-item">Another action</li>
+            <li class="dropdown-item" @click="unfollowPlaylist">
+              Unfollow Playlist
+            </li>
+          </ul>
+        </div>
+        <router-link to="/edit"
+          ><button class="btn" @click="log('test')">
+            <BIconPencilFill /></button
+        ></router-link>
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            Open on browser
-          </li>
-          <li class="dropdown-item" @click="goTo(playlist.uri)">Open on app</li>
-        </ul>
+            <BIconLink45deg />
+          </button>
+          <ul class="dropdown-menu">
+            <li
+              class="dropdown-item"
+              @click="goTo(playlist.external_urls.spotify)"
+            >
+              Open on browser
+            </li>
+            <li class="dropdown-item" @click="goTo(playlist.uri)">
+              Open on app
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
+    <EditPlaylistDetailsModal :id="modalId" :playlist="playlist" />
   </div>
 </template>
 
@@ -66,6 +71,7 @@ import { useStore } from "vuex";
 import checkAccessTokenExpired from "@/helpers/accessToken";
 import CollaborativeLabel from "@/components/CollaborativeLabel";
 import PublicStatusLabel from "@/components/PublicStatusLabel";
+import EditPlaylistDetailsModal from "@/components/EditPlaylistDetailsModal";
 import API from "@/helpers/api";
 export default {
   name: "PlaylistButton",
@@ -74,11 +80,14 @@ export default {
   components: {
     CollaborativeLabel,
     PublicStatusLabel,
+    EditPlaylistDetailsModal,
   },
   setup(props, { emit }) {
     const store = useStore();
 
     const accessToken = computed(() => store.state.accessToken);
+
+    const modalId = computed(() => `modal-${props.playlist.id}`);
 
     const displayTotalSongs = computed(() => {
       let total = props.playlist.tracks.total;
@@ -112,6 +121,7 @@ export default {
     return {
       accessToken: accessToken,
       displayTotalSongs: displayTotalSongs,
+      modalId: modalId,
       log: log,
       goTo: goTo,
       unfollowPlaylist: unfollowPlaylist,

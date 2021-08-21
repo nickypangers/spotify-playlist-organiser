@@ -69,12 +69,7 @@
       </div>
     </div>
   </div>
-
   <CreatePlaylistModal @success="initPlaylist" />
-  <EditPlaylistDetailsModal
-    :playlist="selectedPlaylist"
-    v-show="selectedPlaylist != null"
-  />
 </template>
 
 <script>
@@ -90,7 +85,6 @@ import PlaylistItemButton from "@/components/PlaylistItemButton";
 import CreatePlaylistModal from "@/components/CreatePlaylistModal";
 import RefreshButton from "@/components/RefreshButton";
 import Pagination from "@/components/Pagination";
-import EditPlaylistDetailsModal from "@/components/EditPlaylistDetailsModal";
 
 export default {
   name: "Playlist",
@@ -100,7 +94,6 @@ export default {
     CreatePlaylistModal,
     RefreshButton,
     Pagination,
-    EditPlaylistDetailsModal,
   },
   setup() {
     const store = useStore();
