@@ -174,10 +174,18 @@ export default {
       "changePlaylistDetail",
       qs.stringify({
         playlistId: playlistId,
-        playlistDetail: playlistDetail,
+        playlistDetail: qs.stringify(playlistDetail),
         accessToken: store.state.accessToken,
       })
     );
     return response;
+  },
+
+  async updateUserPlaylistList() {
+    let userId = store.state.user.id;
+    let response = await this.getSpotifyUserPlaylist(userId);
+    console.log(response.data);
+
+    // response.data.items
   },
 };

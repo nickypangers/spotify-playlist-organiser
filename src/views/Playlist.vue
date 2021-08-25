@@ -148,7 +148,7 @@ export default {
     async function getPlaylist() {
       await checkAccessTokenExpired();
 
-      let response = await API.getSpotifyUserPlaylist(user.value.display_name);
+      let response = await API.getSpotifyUserPlaylist(user.value.id);
 
       playlistList.value = response.data.items;
     }

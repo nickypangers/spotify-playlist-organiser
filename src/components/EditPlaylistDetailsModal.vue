@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 import API from "@/helpers/api";
 
@@ -128,8 +128,22 @@ export default {
   setup(props, { emit }) {
     const close = ref(null);
     const isLoading = ref(false);
-    const isPublic = ref(false);
-    const isCollaborative = ref(false);
+    const isPublic = computed({
+      get() {
+        return tempPlaylist.value.public;
+      },
+      set(val) {
+        tempPlaylist.value.public = val;
+      },
+    });
+    const isCollaborative = computed({
+      get() {
+        return tempPlaylist.value.collaborative;
+      },
+      set(val) {
+        tempPlaylist.value.collaborative = val;
+      },
+    });
     const errorMessage = ref("");
 
     const tempPlaylist = ref({});
@@ -144,16 +158,33 @@ export default {
         public: isPublic.value,
         collaborative: isCollaborative.value,
       };
+
+      console.debug("playlistDetail=", playlistDetail);
+
       let response = await API.changePlaylistDetail(
         props.playlist.id,
         playlistDetail
       );
       console.debug("editPlaylist=", response.data);
+
+      let error = response.data.error;
+
+      if (error.status != 0) {
+        console.debug("error=", error);
+        return;
+      }
+
+      await API.updateUserPlaylistList();
+
+      closeModal();
+    };
+
+    const closeModal = () => {
+      close.value.click();
     };
 
     onMounted(() => {
       tempPlaylist.value = props.playlist;
-      console.debug("tempPlaylist=", tempPlaylist.value);
     });
 
     return {
