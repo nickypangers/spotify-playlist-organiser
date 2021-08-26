@@ -28,7 +28,6 @@
             >
               Edit Playlist Details
             </li>
-            <li class="dropdown-item">Another action</li>
             <li class="dropdown-item" @click="unfollowPlaylist">
               Unfollow Playlist
             </li>
