@@ -98,7 +98,15 @@ export default {
   setup() {
     const store = useStore();
 
-    const playlistList = ref([]);
+    const playlistList = computed({
+      get() {
+        return store.state.playlistList;
+      },
+      set(val) {
+        store.commit("setPlaylistList", val);
+      },
+    });
+    // const playlistList = ref([]);
     const selectedIndex = ref(0);
     const selectedPlaylistItemList = ref([]);
     const isLoading = ref(false);

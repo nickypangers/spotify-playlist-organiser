@@ -186,6 +186,10 @@ export default {
     let response = await this.getSpotifyUserPlaylist(userId);
     console.log(response.data);
 
+    store.commit("setPlaylistList", response.data.items);
+
+    console.log(store.state.playlistList);
+
     // response.data.items
   },
 };

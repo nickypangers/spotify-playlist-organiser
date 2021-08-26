@@ -7,6 +7,7 @@
     tabindex="-1"
     aria-labelledby="editPlaylistDetailsLabel"
     aria-hidden="true"
+    @keyup.enter="editPlaylist"
   >
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -20,7 +21,6 @@
           ></button>
         </div>
         <div class="modal-body">
-          {{ playlist }}
           <div class="container">
             <div
               class="alert alert-danger"
@@ -30,12 +30,14 @@
               {errorMessage}
             </div>
             <div class="d-flex align-items center">
-              <label for="editName">Playlist Name: </label>
+              <label :for="id + 'EditEnableCollaborative'"
+                >Playlist Name:
+              </label>
               &nbsp;
               <input
                 type="text"
                 name="editName"
-                id="editName"
+                :id="id + 'EditName'"
                 v-model="tempPlaylist.name"
               />
             </div>
@@ -43,44 +45,46 @@
               <div class="d-flex align-items-center">
                 <input
                   type="radio"
-                  id="editPublic"
+                  :id="id + 'EditPublic'"
                   v-model="isPublic"
                   :value="true"
                   :disabled="isCollaborative"
                 />
-                <label for="editPublic" class="me-3">Public</label>
+                <label :for="id + 'EditEnableCollaborative'" class="me-3"
+                  >Public</label
+                >
               </div>
               <div class="d-flex align-items-center">
                 <input
                   type="radio"
-                  id="editPrivate"
+                  :id="id + 'EditPrivate'"
                   v-model="isPublic"
                   :value="false"
                 />
-                <label for="editPrivate">Private</label>
+                <label :for="id + 'EditEnableCollaborative'">Private</label>
               </div>
             </div>
             <div class="d-flex mt-3">
               <div class="d-flex align-items-center">
                 <input
                   type="radio"
-                  id="editEnableCollaborative"
+                  :id="id + 'EditEnableCollaborative'"
                   v-model="isCollaborative"
                   :value="true"
                   :disabled="isPublic"
                 />
-                <label for="editEnableCollaborative" class="me-3"
+                <label :for="id + 'EditEnableCollaborative'" class="me-3"
                   >Enable Collaborative</label
                 >
               </div>
               <div class="d-flex align-items-center">
                 <input
                   type="radio"
-                  id="editDisableCollaborative"
+                  :id="id + 'EditDisableCollaborative'"
                   v-model="isCollaborative"
                   :value="false"
                 />
-                <label for="editDisableCollaborative"
+                <label :for="id + 'EditDisableCollaborative'"
                   >Disable Collaborative</label
                 >
               </div>

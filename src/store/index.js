@@ -6,6 +6,7 @@ export default createStore({
     user: null,
     accessToken: null,
     playlist: null,
+    playlistList: [],
     searchResultList: [],
     toastEl: null,
     editPlaylistModalEl: null,
@@ -35,6 +36,9 @@ export default createStore({
     },
     toggleIsLoading(state, val) {
       state.isLoading = val;
+    },
+    setPlaylistList(state, val) {
+      state.playlistList = val;
     },
   },
   actions: {},
