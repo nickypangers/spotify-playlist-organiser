@@ -56,6 +56,12 @@
             <li class="dropdown-item" @click="goTo(playlist.uri)">
               Open on app
             </li>
+            <li
+              class="dropdown-item"
+              @click="copyToClipboard(playlist.external_urls.spotify)"
+            >
+              Share playlist
+            </li>
           </ul>
         </div>
       </div>
@@ -67,6 +73,7 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { displayToast } from "@/helpers/toast";
 import checkAccessTokenExpired from "@/helpers/accessToken";
 import CollaborativeLabel from "@/components/CollaborativeLabel";
 import PublicStatusLabel from "@/components/PublicStatusLabel";
@@ -105,6 +112,12 @@ export default {
       window.open(val);
     }
 
+    function copyToClipboard(url) {
+      navigator.clipboard.writeText(url);
+      console.log("copied to clipboard", url);
+      displayToast();
+    }
+
     async function unfollowPlaylist() {
       await checkAccessTokenExpired();
 
@@ -124,6 +137,7 @@ export default {
       log: log,
       goTo: goTo,
       unfollowPlaylist: unfollowPlaylist,
+      copyToClipboard: copyToClipboard,
     };
   },
 };

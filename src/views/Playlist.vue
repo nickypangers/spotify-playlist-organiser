@@ -70,6 +70,7 @@
     </div>
   </div>
   <CreatePlaylistModal @success="initPlaylist" />
+  <Toast message="Link copied to clipboard" :isSuccess="true" />
 </template>
 
 <script>
@@ -85,6 +86,7 @@ import PlaylistItemButton from "@/components/PlaylistItemButton";
 import CreatePlaylistModal from "@/components/CreatePlaylistModal";
 import RefreshButton from "@/components/RefreshButton";
 import Pagination from "@/components/Pagination";
+import Toast from "@/components/Toast";
 
 export default {
   name: "Playlist",
@@ -94,6 +96,7 @@ export default {
     CreatePlaylistModal,
     RefreshButton,
     Pagination,
+    Toast,
   },
   setup() {
     const store = useStore();
@@ -251,6 +254,13 @@ export default {
     watch(selectedPlaylistCurrentPage, async (newVal) => {
       await getPlaylistItemList(newVal * offset.value, 10);
     });
+
+    // function showToast(msg, state) {
+    //   console.log(msg);
+    //   toastMessage.value = msg;
+    //   isReorderSuccess.value = state;
+    //   toastEl.value.show();
+    // }
 
     onMounted(async () => {
       await initPlaylist();

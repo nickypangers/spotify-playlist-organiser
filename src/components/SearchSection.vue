@@ -10,11 +10,11 @@
         placeholder="Search Here..."
       />
       <button
-      class="btn btn-primary ms-2"
+        class="btn btn-primary ms-2"
         :class="{ 'd-block': query, 'd-none': !query }"
         @click="query = ''"
       >
-       Clear
+        Clear
       </button>
     </div>
     <div class="mt-3">
@@ -92,10 +92,7 @@ export default {
     async function updateSearchResultList(query) {
       isLoading.value = true;
 
-      let response = await API.searchQuery(
-        query,
-        "artist,track"
-      );
+      let response = await API.searchQuery(query, "artist,track");
 
       console.debug("result=", response.data);
 
